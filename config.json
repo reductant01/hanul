@@ -1,0 +1,12 @@
+{
+  "documentId": "a0246540e0fe97fda94b3a40",
+  "workspaceId": "4cc934affac57f314c2ffd8c",
+  "elementId": "276b6b5cd83c31d5899bd8c3",
+  "outputFormat": "urdf",
+  "robotName": "hanul",
+  "drawCollisions": false,
+  "jointMaxEffort": 100,
+  "jointMaxVelocity": 10,
+  "useFixedLinks": true,
+  "maxInertia": 0.1
+}

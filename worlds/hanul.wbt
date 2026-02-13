@@ -1,0 +1,39 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "../protos/Hanul.proto"
+
+WorldInfo {
+  info [
+    "Hanul Robot Simulation with Omni Wheels"
+  ]
+  basicTimeStep 16
+  contactProperties [
+    ContactProperties {
+      material1 "omni_wheel"
+      coulombFriction [
+        0, 1
+      ]
+      bounce 0
+      softERP 0.8
+      softCFM 0.002
+    }
+  ]
+}
+Viewpoint {
+  orientation 0.07256279746757872 -0.07424958978300275 -0.9945962189957969 2.607173376303875
+  position 1.5084877488455435 0.6841874438622699 0.3540904839457666
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 5 5
+}
+Hanul {
+  rotation 0 0 1 3
+  controller "hanul_driver"
+}

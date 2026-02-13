@@ -1,0 +1,76 @@
+#VRML_SIM R2025a utf8
+# OmniWheel.proto
+
+PROTO OmniWheel [
+  field SFVec3f    translation      0 0 0
+  field SFRotation rotation         0 0 1 0
+  field SFString   name             "wheel"
+  field SFString   sensorName       "wheel_sensor"
+  field SFVec3f    axis             0 0 1           # 회전축 (기본값: Z축)
+  field SFVec3f    anchor           0 0 0           # 회전 중심점
+  field SFFloat    maxVelocity      10.0
+  field SFFloat    mass             1.0
+  field SFFloat    radius           0.05            # 바퀴 반지름
+  field SFFloat    width            0.04         
+]
+{
+  HingeJoint {
+    jointParameters HingeJointParameters {
+      axis IS axis
+      anchor IS anchor
+    }
+    device [
+      RotationalMotor {
+        name IS name
+        maxVelocity IS maxVelocity
+      }
+      PositionSensor {
+        name IS sensorName
+      }
+    ]
+    endPoint Solid {
+      translation IS translation
+      rotation IS rotation
+      name IS name
+      
+      # [핵심] 횡방향 마찰을 0으로 만드는 재질 적용 (유지)
+      contactMaterial "omni_wheel"
+      
+      children [
+        # 1. 시각적 모델 (STL 파일 - 눈에 보이는 모습)
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.2 0.2 0.2
+            roughness 1
+            metalness 0
+          }
+          geometry Mesh {
+            url "assets/Omni Wheel.stl"
+          }
+        }
+      ]
+      
+      # 2. 물리적 충돌체 (수정됨)
+      boundingObject Transform {
+        # 위치는 STL 모델의 중심에 맞게 조절 (기존 값 유지)
+        translation 0 0 -0.017
+        rotation 0 0 1 1.5708  # 원통을 눕힘
+        children [
+          Cylinder {
+            radius IS radius
+            height IS width
+            
+            # [수정 2] 다각형 개수 늘리기 (핵심!)
+            # 기본값(12)은 각져서 덜컹거립니다. 64로 늘려서 매끄러운 원으로 만드세요.
+            subdivision 64
+          }
+        ]
+      }
+      
+      physics Physics {
+        mass IS mass
+        density -1
+      }
+    }
+  }
+}

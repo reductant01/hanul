@@ -1,0 +1,88 @@
+#VRML_SIM R2025a utf8
+# license: Apache License 2.0
+# license url: http://www.apache.org/licenses/LICENSE-2.0
+# This is a proto file for Webots for the Hanul
+
+# [중요] OmniWheel PROTO를 불러옵니다.
+EXTERNPROTO "OmniWheel.proto"
+
+PROTO Hanul [
+  field  SFVec3f      translation      0 0 0
+  field  SFRotation   rotation         0 0 1 0
+  field  SFString     name             "Hanul"
+  field  SFString     controller       "void"
+  field  MFString     controllerArgs   []
+  field  SFString     customData       ""
+  field  SFBool       supervisor       FALSE
+  field  SFBool       synchronization  TRUE
+  field  SFBool       selfCollision    FALSE
+]
+{
+  Robot {
+    translation IS translation
+    rotation IS rotation
+    controller IS controller
+    controllerArgs IS controllerArgs
+    customData IS customData
+    supervisor IS supervisor
+    synchronization IS synchronization
+    selfCollision IS selfCollision
+    name IS name
+    
+    children [
+      # 1. 몸통 (Base) - 주황색
+      Shape {
+        appearance DEF orange PBRAppearance {
+          baseColor 1.000000 0.500000 0.000000
+          roughness 1.000000
+          metalness 0
+        }
+        geometry DEF base Mesh {
+          url "assets/base.stl"
+        }
+      }
+
+      # 2. 왼쪽 바퀴 (OmniWheel 사용)
+      OmniWheel {
+        name "joint_wheel_left"            # 모터 이름
+        sensorName "joint_wheel_left_sensor"
+        translation 0.0664 0.115 0.05      # 위치
+        rotation 0.654655 0.377963 -0.654653 2.418863 # 회전값
+        anchor 0.0664 0.115 0.05           # 회전 중심
+        axis -0.500004 -0.866023 -0.000004 # 회전 축 (벡터)
+      }
+
+      # 3. 오른쪽 바퀴 (OmniWheel 사용)
+      OmniWheel {
+        name "joint_wheel_right"
+        sensorName "joint_wheel_right_sensor"
+        translation 0.0664 -0.115 0.05
+        rotation -0.654655 0.377963 0.654653 2.418863
+        anchor 0.0664 -0.115 0.05
+        axis -0.500004 0.866023 -0.000004
+      }
+
+      # 4. 뒤쪽 바퀴 (OmniWheel 사용)
+      OmniWheel {
+        name "joint_wheel_back"                     
+        sensorName "joint_wheel_back_sensor"
+        translation -0.1353 0 0.05
+        rotation 0 1 0 1.5708
+        anchor -0.1353 0 0.05
+        axis 1 0 0
+      }
+    ]
+
+    # 몸통 물리 속성
+    boundingObject USE base
+    physics Physics {
+      density -1
+      mass 10.000000
+      centerOfMass [ 0.000000 0.000000 0.000000 ]
+      inertiaMatrix [
+        1.000000e-01 1.000000e-01 1.000000e-01
+        0.000000e+00 0.000000e+00 0.000000e+00
+      ]
+    }
+  }
+}
