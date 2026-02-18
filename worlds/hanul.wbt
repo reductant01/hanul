@@ -3,7 +3,9 @@
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
-EXTERNPROTO "../protos/Hanul.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/tables/protos/RoundTable.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/tables/protos/Table.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/WoodenBox.proto"
 
 WorldInfo {
   info [
@@ -23,17 +25,220 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation 0.07256279746757872 -0.07424958978300275 -0.9945962189957969 2.607173376303875
-  position 1.5084877488455435 0.6841874438622699 0.3540904839457666
+  orientation 0.5282683838002182 0.7259567033797536 0.4403627816869926 0.30661512784274836
+  position -1.6845322060230312 -1.9875100051482886 1.156034231638279
 }
 TexturedBackground {
 }
 TexturedBackgroundLight {
 }
 RectangleArena {
-  floorSize 5 5
+  floorSize 12.3 5.625
+  wallHeight 0.5
 }
-Hanul {
-  rotation 0 0 1 3
-  controller "hanul_driver"
+RoundTable {
+}
+Robot {
+  translation -3 0 0
+  children [
+    Lidar {
+      translation 0.09 0 0.12375
+      rotation 0 0 1 3.14159
+      name "lidar a1"
+      horizontalResolution 360
+      fieldOfView 6.28318
+      numberOfLayers 1
+      near 0.1
+      minRange 0.15
+      maxRange 12
+      defaultFrequency 5.5
+      maxFrequency 10
+    }
+    Shape {
+      appearance DEF orange PBRAppearance {
+        baseColor 1 0.5 0
+        roughness 1
+        metalness 0
+      }
+      geometry DEF base Mesh {
+        url [
+          "../protos/assets/base.stl"
+        ]
+      }
+      castShadows FALSE
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        axis -0.500004 -0.866023 -4e-06
+        anchor 0.0664 0.115 0.05
+      }
+      device [
+        RotationalMotor {
+          name "joint_wheel_left"
+        }
+        PositionSensor {
+          name "joint_wheel_left_sensor"
+        }
+      ]
+      endPoint Solid {
+        translation 0.0664 0.115 0.05
+        rotation 0.6546550822237013 0.37796304747159487 -0.6546530822234504 2.418863
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.2 0.2 0.2
+              roughness 1
+              metalness 0
+            }
+            geometry Mesh {
+              url [
+                "../protos/assets/Omni Wheel.stl"
+              ]
+            }
+            castShadows FALSE
+          }
+        ]
+        name "joint_wheel_left"
+        contactMaterial "omni_wheel"
+        boundingObject Pose {
+          translation 0 0 -0.017
+          rotation 0 0 1 1.5708
+          children [
+            Cylinder {
+              height 0.04
+              radius 0.05
+              subdivision 64
+            }
+          ]
+        }
+        physics Physics {
+          density -1
+          mass 1
+        }
+      }
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        axis -0.500004 0.866023 -4e-06
+        anchor 0.0664 -0.115 0.05
+      }
+      device [
+        RotationalMotor {
+          name "joint_wheel_right"
+        }
+        PositionSensor {
+          name "joint_wheel_right_sensor"
+        }
+      ]
+      endPoint Solid {
+        translation 0.0664 -0.115 0.05
+        rotation -0.6546550822237013 0.37796304747159487 0.6546530822234504 2.418863
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.2 0.2 0.2
+              roughness 1
+              metalness 0
+            }
+            geometry Mesh {
+              url [
+                "../protos/assets/Omni Wheel.stl"
+              ]
+            }
+            castShadows FALSE
+          }
+        ]
+        name "joint_wheel_right"
+        contactMaterial "omni_wheel"
+        boundingObject Pose {
+          translation 0 0 -0.017
+          rotation 0 0 1 1.5708
+          children [
+            Cylinder {
+              height 0.04
+              radius 0.05
+              subdivision 64
+            }
+          ]
+        }
+        physics Physics {
+          density -1
+          mass 1
+        }
+      }
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        anchor -0.1353 0 0.05
+      }
+      device [
+        RotationalMotor {
+          name "joint_wheel_back"
+        }
+        PositionSensor {
+          name "joint_wheel_back_sensor"
+        }
+      ]
+      endPoint Solid {
+        translation -0.1353 0 0.05
+        rotation 0 1 0 1.5708
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.2 0.2 0.2
+              roughness 1
+              metalness 0
+            }
+            geometry Mesh {
+              url [
+                "../protos/assets/Omni Wheel.stl"
+              ]
+            }
+            castShadows FALSE
+          }
+        ]
+        name "joint_wheel_back"
+        contactMaterial "omni_wheel"
+        boundingObject Pose {
+          translation 0 0 -0.017
+          rotation 0 0 1 1.5708
+          children [
+            Cylinder {
+              height 0.04
+              radius 0.05
+              subdivision 64
+            }
+          ]
+        }
+        physics Physics {
+          density -1
+          mass 1
+        }
+      }
+    }
+  ]
+  name "Hanul"
+  boundingObject USE base
+  physics Physics {
+    density -1
+    mass 10
+    centerOfMass [
+      0 0 0
+    ]
+    inertiaMatrix [
+      0.1 0.1 0.1
+      0 0 0
+    ]
+  }
+  controller "hanul_controller"
+}
+Table {
+  translation 2.5 -1.9 0
+}
+WoodenBox {
+  translation 2.5 -1.5 0.3
+}
+WoodenBox {
+  translation 2.5 -2.2 0.3
+  name "wooden box(1)"
 }
