@@ -18,8 +18,8 @@ SETUP_CMD="source /opt/ros/jazzy/setup.bash"
 WEBOTS_WORLD="$PROJECT_ROOT/worlds/hanul.wbt"
 CMD_1="$SETUP_CMD; webots \"$WEBOTS_WORLD\"; exec bash"
 
-# [2] 오른쪽 위: SLAM Toolbox 실행
-CMD_2="$SETUP_CMD; ros2 launch slam_toolbox online_async_launch.py; exec bash"
+# [2] 오른쪽 위: SLAM Toolbox 실행 (맵 갱신 주기 단축용 커스텀 파라미터 사용)
+CMD_2="$SETUP_CMD; ros2 launch slam_toolbox online_async_launch.py use_sim_time:=false slam_params_file:=$PROJECT_ROOT/config/slam_toolbox_params.yaml; exec bash"
 
 # [3] 왼쪽 아래: RViz2 실행
 CMD_3="$SETUP_CMD; ros2 run rviz2 rviz2; exec bash"

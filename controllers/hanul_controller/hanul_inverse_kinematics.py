@@ -30,9 +30,9 @@ class HanulKinematics:
         motor_back  = (1.0*vy + w) * MAX_SPEED
         
         Args:
-            vx: 전후 선속도 (m/s) [-1, 1]
-            vy: 좌우 선속도 (m/s) [-1, 1]
-            w: 각속도 (rad/s) [-1, 1]
+            vx: 전후 이동 명령 (정규화 값, 일반적으로 [-1, 1])
+            vy: 좌우 이동 명령 (정규화 값, 일반적으로 [-1, 1])
+            w: 회전 명령 (정규화 값, 일반적으로 [-1, 1])
         
         Returns:
             (motor_left, motor_right, motor_back): 모터 속도 (rad/s)
@@ -42,7 +42,7 @@ class HanulKinematics:
         motor_right = (-0.5 * vy + 0.866 * vx + w) * self.MAX_SPEED
         motor_back = (1.0 * vy + w) * self.MAX_SPEED
         
-        return motor_left, motor_right, motor_back
+        return self.clamp_speed(motor_left, motor_right, motor_back)
     
     def clamp_speed(self, motor_left, motor_right, motor_back):
         """

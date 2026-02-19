@@ -60,7 +60,8 @@ class HanulOdometry:
         # 순기학 (Forward Kinematics) 사용 (엔코더값 → 로봇 위치)
         # 각 바퀴의 이동거리 → 로봇의 이동량 
         delta_x = (delta_R - delta_L) / 1.73205  # √3 으로 나눔
-        delta_y = (delta_L + delta_R - 2.0 * delta_B) / 3.0
+        # ROS 좌표계 기준(+y: 좌측)과 일치하도록 y축 부호를 맞춤
+        delta_y = (2.0 * delta_B - delta_L - delta_R) / 3.0
         delta_theta = (delta_L + delta_R + delta_B) / (3.0 * self.L)
         
         # 현재 위치 업데이트 (회전을 고려한 좌표 변환)

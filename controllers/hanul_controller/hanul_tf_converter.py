@@ -19,8 +19,10 @@ class HanulTFConverter:
     
     def __init__(self):
         """로봇의 센서 위치 설정"""
-        # 라이다는 로봇 중심에서 위쪽 15cm에 위치
-        self.lidar_height = 0.15  # m
+        # worlds/hanul.wbt의 Lidar pose와 동일하게 맞춤
+        self.lidar_x = 0.09
+        self.lidar_y = 0.0
+        self.lidar_z = 0.12375
     
     def create_odometry_transform(self, x, y, theta, ros_node):
         """오도메트리를 TF 메시지로 변환
@@ -68,12 +70,10 @@ class HanulTFConverter:
         t_lidar.header.frame_id = 'base_footprint'  # 기준 좌표계 (로봇)
         t_lidar.child_frame_id = 'lidar_link'       # 자식 좌표계 (라이다)
         
-        # 라이다의 위치 (로봇 중심 기준, 고정값)
-        t_lidar.transform.translation.x = 0.0
-        t_lidar.transform.translation.y = 0.0
-        t_lidar.transform.translation.z = self.lidar_height
+        t_lidar.transform.translation.x = self.lidar_x
+        t_lidar.transform.translation.y = self.lidar_y
+        t_lidar.transform.translation.z = self.lidar_z
         
-        # 라이다의 회전 (회전 없음)
         t_lidar.transform.rotation.x = 0.0
         t_lidar.transform.rotation.y = 0.0
         t_lidar.transform.rotation.z = 0.0
@@ -99,14 +99,20 @@ class HanulTFConverter:
         if not ranges:
             return None
         
+        scan_size = len(ranges)
         scan_msg = LaserScan()
         scan_msg.header.stamp = ros_node.get_clock().now().to_msg()
         scan_msg.header.frame_id = 'lidar_link'
         scan_msg.angle_min = -fov / 2.0
-        scan_msg.angle_max = fov / 2.0
-        scan_msg.angle_increment = fov / len(ranges)
+        if scan_size > 1:
+            scan_msg.angle_increment = fov / (scan_size - 1)
+        else:
+            scan_msg.angle_increment = 0.0
+        scan_msg.angle_max = scan_msg.angle_min + scan_msg.angle_increment * (scan_size - 1)
         scan_msg.range_min = min_range
         scan_msg.range_max = max_range
-        scan_msg.ranges = ranges  # 원본 데이터 사용 (뒤집지 않음)
+        n = scan_size
+        shifted = [ranges[(i + n // 2) % n] for i in range(n)]
+        scan_msg.ranges = [shifted[n - 1 - i] for i in range(n)]
         
         return scan_msg

@@ -2,10 +2,10 @@
 Hanul 로봇 Webots 컨트롤러 (진입점)
 
 아키텍처:
-- hanul_movement.py: 하드웨어 제어 (모터, 센서)
+- hanul_webots.py: 하드웨어 제어 (모터, 센서)
 - hanul_inverse_kinematics.py: 역기구학 (명령 → 모터)
 - hanul_odometry.py: 오도메트리 계산 (엔코더 → 위치)
-- hanul_tf_factory.py: TF 메시지 생성 (계산)
+- hanul_tf_converter.py: TF 메시지 생성 (계산)
 - hanul_ros_bridge.py: ROS 2 통신 (발행/구독만)
 - hanul_controller.py: 메인 조율 (이 파일)
 """
@@ -52,6 +52,10 @@ class HanulController:
         step_count = 0
         log_interval = 1000  # 1000 스텝마다 로그 (이전: 10000)
         
+        # 라이다는 고정 프레임이므로 정적 TF를 1회만 발행
+        t_lidar_static = self.tf_converter.create_lidar_transform(self.ros_bridge)
+        self.ros_bridge.publish_static_transform(t_lidar_static)
+        
         try:
             while self.webots.step() != -1:
                 # 1. ROS 2 콜백 처리
@@ -74,11 +78,9 @@ class HanulController:
                 t_odom = self.tf_converter.create_odometry_transform(
                     x, y, theta, self.ros_bridge
                 )
-                t_lidar = self.tf_converter.create_lidar_transform(self.ros_bridge)
                 
                 # 7. ROS 발행 (ros_bridge는 그냥 발행만!)
                 self.ros_bridge.publish_transform(t_odom)
-                self.ros_bridge.publish_transform(t_lidar)
                 
                 # 8. 라이다 스캔 메시지 변환 및 발행
                 lidar_data = self.webots.get_lidar_data()

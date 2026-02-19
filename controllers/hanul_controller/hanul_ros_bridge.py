@@ -10,9 +10,9 @@ ROS 2 토픽 구독/발행만 담당합니다.
 """
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Twist, TransformStamped
+from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
-from tf2_ros import TransformBroadcaster
+from tf2_ros import StaticTransformBroadcaster, TransformBroadcaster
 import threading
 
 
@@ -30,6 +30,7 @@ class HanulROSBridge(Node):
         
         # /tf 발행 (좌표 변환)
         self.tf_broadcaster = TransformBroadcaster(self)
+        self.static_tf_broadcaster = StaticTransformBroadcaster(self)
         
         # 현재 명령 (스레드 안전)
         self.cmd_vel = [0.0, 0.0, 0.0]  # vx, vy, w
@@ -62,6 +63,11 @@ class HanulROSBridge(Node):
         """
         if transform_msg:
             self.tf_broadcaster.sendTransform(transform_msg)
+
+    def publish_static_transform(self, transform_msg):
+        """정적 좌표 변환 발행 (/tf_static)"""
+        if transform_msg:
+            self.static_tf_broadcaster.sendTransform(transform_msg)
 
 
 def init_ros_node():

@@ -82,7 +82,7 @@ Robot {
       ]
       endPoint Solid {
         translation 0.0664 0.115 0.05
-        rotation 0.6546550822237013 0.37796304747159487 -0.6546530822234504 2.418863
+        rotation 0.6546550822237013 0.3779630474715949 -0.6546530822234504 2.418863
         children [
           Shape {
             appearance PBRAppearance {
@@ -132,7 +132,7 @@ Robot {
       ]
       endPoint Solid {
         translation 0.0664 -0.115 0.05
-        rotation -0.6546550822237013 0.37796304747159487 0.6546530822234504 2.418863
+        rotation -0.6546550822237013 0.3779630474715949 0.6546530822234504 2.418863
         children [
           Shape {
             appearance PBRAppearance {
