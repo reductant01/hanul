@@ -144,7 +144,7 @@ cat <<EOF > "$CONFIG_FILE"
       order = 1
       profile = default
       command = "$CMD_TELEOP"
-      title = "Teleop Controller"
+      title = "Teleop"
     [[[terminal_bottom_3]]]
       type = Terminal
       parent = bottom_h3
