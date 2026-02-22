@@ -39,6 +39,7 @@ PROTO OmniWheel [
       children [
         # 1. 시각적 모델 (STL 파일 - 눈에 보이는 모습)
         Shape {
+          castShadows FALSE  # 그림자 삭제
           appearance PBRAppearance {
             baseColor 0.2 0.2 0.2
             roughness 1

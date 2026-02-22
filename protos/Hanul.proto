@@ -32,6 +32,7 @@ PROTO Hanul [
     children [
       # 1. 몸통 (Base) - 주황색
       Shape {
+        castShadows FALSE  # 그림자 삭제
         appearance DEF orange PBRAppearance {
           baseColor 1.000000 0.500000 0.000000
           roughness 1.000000
