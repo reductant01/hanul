@@ -37,7 +37,7 @@ class HanulWebots:
         self.lidar.enable(self.timestep)
         
         # 역기구학 모듈
-        self.kinematics = HanulKinematics(max_speed=5.0)
+        self.kinematics = HanulKinematics(max_speed=6.0)
         
         # 가속도 제한 파라미터
         self.acceleration_factor = 0.1  # 부드러운 가속

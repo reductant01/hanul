@@ -37,7 +37,6 @@ class HanulROSBridge(Node):
         self.cmd_vel_lock = threading.Lock()
     
     def cmd_vel_callback(self, msg):
-        """cmd_vel 토픽 구독 콜백 (linear.y는 로봇 좌표계에 맞게 부호 반전)"""
         with self.cmd_vel_lock:
             self.cmd_vel = [msg.linear.x, -msg.linear.y, msg.angular.z]
     

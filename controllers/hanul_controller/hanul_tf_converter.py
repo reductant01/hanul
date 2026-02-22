@@ -24,7 +24,7 @@ class HanulTFConverter:
         self.lidar_y = 0.0
         self.lidar_z = 0.12375
     
-    def create_odometry_transform(self, x, y, theta, ros_node):
+    def create_odometry_transform(self, x, y, theta, ros_node, stamp=None):
         """오도메트리를 TF 메시지로 변환
         
         odom (지도) → base_footprint (로봇)
@@ -32,16 +32,16 @@ class HanulTFConverter:
         Args:
             x, y, theta: 로봇의 위치와 각도 (오도메트리에서 계산됨)
             ros_node: ROS 노드 (타임스탬프 생성용)
+            stamp: optional, 동일 스탬프를 스캔과 맞출 때 사용
         
         Returns:
             TransformStamped: odom → base_footprint TF 메시지
         """
         t_odom = TransformStamped()
-        t_odom.header.stamp = ros_node.get_clock().now().to_msg()
+        t_odom.header.stamp = stamp if stamp is not None else ros_node.get_clock().now().to_msg()
         t_odom.header.frame_id = 'odom'           # 기준 좌표계 (지도)
         t_odom.child_frame_id = 'base_footprint'  # 자식 좌표계 (로봇)
         
-        # 로봇의 위치
         t_odom.transform.translation.x = x
         t_odom.transform.translation.y = y
         t_odom.transform.translation.z = 0.0
@@ -81,7 +81,7 @@ class HanulTFConverter:
         
         return t_lidar
     
-    def create_laser_scan_msg(self, ranges, fov, min_range, max_range, ros_node):
+    def create_laser_scan_msg(self, ranges, fov, min_range, max_range, ros_node, stamp=None):
         """라이다 데이터를 LaserScan 메시지로 변환
         
         Args:
@@ -90,6 +90,7 @@ class HanulTFConverter:
             min_range: 최소 거리
             max_range: 최대 거리
             ros_node: ROS 노드 (타임스탬프 생성용)
+            stamp: optional, odom TF와 동일하게 맞출 때 사용 (lidar_link TF 경고 방지)
         
         Returns:
             LaserScan: 라이다 스캔 메시지
@@ -101,7 +102,7 @@ class HanulTFConverter:
         
         scan_size = len(ranges)
         scan_msg = LaserScan()
-        scan_msg.header.stamp = ros_node.get_clock().now().to_msg()
+        scan_msg.header.stamp = stamp if stamp is not None else ros_node.get_clock().now().to_msg()
         scan_msg.header.frame_id = 'lidar_link'
         scan_msg.angle_min = -fov / 2.0
         if scan_size > 1:

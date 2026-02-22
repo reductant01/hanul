@@ -74,22 +74,20 @@ class HanulController:
                 # 5. 현재 위치 얻기
                 x, y, theta = self.odometry.get_pose()
                 
-                # 6. TF 메시지 변환 (controller에서 계산!)
+                stamp = self.ros_bridge.get_clock().now().to_msg()
                 t_odom = self.tf_converter.create_odometry_transform(
-                    x, y, theta, self.ros_bridge
+                    x, y, theta, self.ros_bridge, stamp=stamp
                 )
-                
-                # 7. ROS 발행 (ros_bridge는 그냥 발행만!)
                 self.ros_bridge.publish_transform(t_odom)
                 
-                # 8. 라이다 스캔 메시지 변환 및 발행
                 lidar_data = self.webots.get_lidar_data()
                 scan_msg = self.tf_converter.create_laser_scan_msg(
                     lidar_data['ranges'],
                     lidar_data['fov'],
                     lidar_data['min_range'],
                     lidar_data['max_range'],
-                    self.ros_bridge
+                    self.ros_bridge,
+                    stamp=stamp,
                 )
                 self.ros_bridge.publish_scan(scan_msg)
                 
