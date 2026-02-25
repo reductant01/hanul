@@ -1,6 +1,12 @@
 # 4. 네비게이션 (Navigation)
 
-목표 지점까지 Nav2로 경로 계획·추종합니다. loc 모드에서 Nav2 터미널이 `navigation_launch.py`로 controller_server, planner_server, bt_navigator, costmap 등을 띄우며 **config/nav2_params.yaml**을 씁니다. 옴니휠은 controller **motion_model: "Omni"**, velocity_smoother에 vy 허용 필수.
+이 문서는 **네비게이션 단계**에서 겪은 오류와 해결방법을 정리한 것입니다.
+
+---
+
+## 개요
+
+목표 지점까지 Nav2로 경로 계획·추종합니다. loc 모드에서 Nav2 터미널이 `navigation_launch.py`로 controller_server, planner_server, bt_navigator, costmap 등을 띄우며 **config/nav2_params.yaml**을 씁니다. 옴니휠은 controller **motion_model: "Omni"**, velocity_smoother에 vy 허용 필수. 설치: `sudo apt install ros-jazzy-nav2-bringup`.
 
 ---
 
@@ -43,4 +49,4 @@ ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose "pose: {
 
 ---
 
-[이전: 3. 로컬라이제이션](03_localization.md) · [목차: nav2_usage](nav2_usage.md)
+[이전: 3. 로컬라이제이션](03_localization.md)
