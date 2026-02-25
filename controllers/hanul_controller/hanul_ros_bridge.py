@@ -35,10 +35,25 @@ class HanulROSBridge(Node):
         # 현재 명령 (스레드 안전)
         self.cmd_vel = [0.0, 0.0, 0.0]  # vx, vy, w
         self.cmd_vel_lock = threading.Lock()
+        self.cmd_vel_scale = 30.0
+        self.cmd_vel_scale_thresh_linear = 0.05
+        self.cmd_vel_scale_thresh_angular = 0.02
+        self.cmd_vel_max = (0.5, 0.5, 1.9)
+        self.cmd_vel_min = (-0.35, -0.5, -1.9)
     
     def cmd_vel_callback(self, msg):
+        vx = msg.linear.x
+        vy = -msg.linear.y
+        w = msg.angular.z
+        if (abs(vx) < self.cmd_vel_scale_thresh_linear
+                and abs(vy) < self.cmd_vel_scale_thresh_linear
+                and abs(w) < self.cmd_vel_scale_thresh_angular
+                and (vx != 0 or vy != 0 or w != 0)):
+            vx = max(self.cmd_vel_min[0], min(self.cmd_vel_max[0], vx * self.cmd_vel_scale))
+            vy = max(self.cmd_vel_min[1], min(self.cmd_vel_max[1], vy * self.cmd_vel_scale))
+            w = max(self.cmd_vel_min[2], min(self.cmd_vel_max[2], w * self.cmd_vel_scale))
         with self.cmd_vel_lock:
-            self.cmd_vel = [msg.linear.x, -msg.linear.y, msg.angular.z]
+            self.cmd_vel = [vx, vy, w]
     
     def get_cmd_vel(self):
         """현재 속도 명령 반환 (스레드 안전)"""

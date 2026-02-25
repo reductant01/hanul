@@ -53,7 +53,7 @@ elif [[ "$MODE" == "loc" ]]; then
   TITLE_BOTTOM_3="Init Pose"
   TITLE_BOTTOM_4="Nav2"
   CMD_TOP_2="$SETUP_CMD; ros2 run nav2_map_server map_server --ros-args -p yaml_filename:=$MAP_YAML; exec bash"
-  CMD_TOP_3="$SETUP_CMD; ros2 run nav2_amcl amcl --ros-args -p use_sim_time:=false -p scan_topic:=/scan -p base_frame_id:=base_footprint -p odom_frame_id:=odom -p global_frame_id:=map -p update_min_d:=0.02 -p update_min_a:=0.02; exec bash"
+  CMD_TOP_3="$SETUP_CMD; ros2 run nav2_amcl amcl --ros-args -p use_sim_time:=false --params-file $PROJECT_ROOT/config/amcl_params.yaml; exec bash"
   CMD_TOP_4="$SETUP_CMD; ros2 run nav2_lifecycle_manager lifecycle_manager --ros-args -p use_sim_time:=false -p autostart:=true -p node_names:=[map_server,amcl]; exec bash"
   CMD_BOTTOM_3="$SETUP_CMD; sleep 3; ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped '{header: {frame_id: map}, pose: {pose: {position: {x: $INIT_X, y: $INIT_Y, z: 0.0}, orientation: {z: $INIT_QZ, w: $INIT_QW}}, covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0685]}}'; exec bash"
   CMD_BOTTOM_4="$SETUP_CMD; ros2 launch nav2_bringup navigation_launch.py params_file:=$PROJECT_ROOT/config/nav2_params.yaml use_sim_time:=False autostart:=True; exec bash"

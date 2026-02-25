@@ -1,0 +1,27 @@
+amcl:
+  ros__parameters:
+    base_frame_id: "base_footprint"
+    global_frame_id: "map"
+    odom_frame_id: "odom"
+    scan_topic: "scan"
+    map_topic: "map"
+    set_initial_pose: true
+    initial_pose:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+    tf_broadcast: true
+    first_map_only: true
+    max_particles: 2000
+    min_particles: 500
+    transform_tolerance: 0.5
+    update_min_d: 0.02
+    update_min_a: 0.02
+    resample_interval: 1
+    robot_model_type: "nav2_amcl::OmniMotionModel"
+    alpha1: 0.15
+    alpha2: 0.15
+    alpha3: 0.15
+    alpha4: 0.15
+    alpha5: 0.25

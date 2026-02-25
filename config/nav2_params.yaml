@@ -88,6 +88,9 @@ controller_server:
       vy_max: 0.5
       vy_min: -0.5
       wz_max: 1.9
+      vx_std: 0.25
+      vy_std: 0.25
+      wz_std: 0.5
       transform_tolerance: 0.1
       motion_model: "Omni"
       visualize: false

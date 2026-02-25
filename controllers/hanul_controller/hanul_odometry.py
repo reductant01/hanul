@@ -8,21 +8,21 @@ import math
 class HanulOdometry:
     """3휠 옴니휠 로봇 오도메트리"""
     
-    def __init__(self, wheel_radius=0.05, wheelbase=0.1328):
+    def __init__(self, wheel_radius=0.05, wheelbase=0.1328, odom_scale_x=1.0, odom_scale_y=1.0):
         """
         Args:
             wheel_radius: 바퀴 반지름 (m)
             wheelbase: 바퀴 간 거리 (m)
+            odom_scale_x: X 이동량 보정 (실제 대비 odom이 과소/과다 보고할 때 조정, 기본 1.0)
+            odom_scale_y: Y 이동량 보정 (위와 동일)
         """
-        self.R = wheel_radius      # 바퀴 반지름
-        self.L = wheelbase         # 바퀴 간 거리
-        
-        # 누적 위치
+        self.R = wheel_radius
+        self.L = wheelbase
+        self.odom_scale_x = odom_scale_x
+        self.odom_scale_y = odom_scale_y
         self.x = 0.0
         self.y = 0.0
-        self.theta = 0.0  # 라디안
-        
-        # 이전 엔코더 값
+        self.theta = 0.0
         self.last_pos_L = 0.0
         self.last_pos_R = 0.0
         self.last_pos_B = 0.0
@@ -59,15 +59,16 @@ class HanulOdometry:
         
         # 순기학 (Forward Kinematics) 사용 (엔코더값 → 로봇 위치)
         # 각 바퀴의 이동거리 → 로봇의 이동량 
-        delta_x = (delta_R - delta_L) / 1.73205  # √3 으로 나눔
-        # ROS 좌표계 기준(+y: 좌측)과 일치하도록 y축 부호를 맞춤
-        delta_y = (2.0 * delta_B - delta_L - delta_R) / 3.0
+        delta_x = (delta_R - delta_L) / 1.73205
+        raw_delta_y = (2.0 * delta_B - delta_L - delta_R) / 3.0
+        delta_y = -raw_delta_y
         delta_theta = (delta_L + delta_R + delta_B) / (3.0 * self.L)
         
-        # 현재 위치 업데이트 (회전을 고려한 좌표 변환)
         avg_theta = self.theta + (delta_theta / 2.0)
-        self.x += (delta_x * math.cos(avg_theta) - delta_y * math.sin(avg_theta))
-        self.y += (delta_x * math.sin(avg_theta) + delta_y * math.cos(avg_theta))
+        dx_world = delta_x * math.cos(avg_theta) - delta_y * math.sin(avg_theta)
+        dy_world = delta_x * math.sin(avg_theta) + delta_y * math.cos(avg_theta)
+        self.x += self.odom_scale_x * dx_world
+        self.y += self.odom_scale_y * dy_world
         self.theta += delta_theta
         
         # 각도 정규화 (-π ~ π)
