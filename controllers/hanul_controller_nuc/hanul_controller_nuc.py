@@ -1,24 +1,24 @@
 """
-Hanul 실제 로봇 컨트롤러 진입점
+Hanul NUC 실제 로봇 컨트롤러 진입점
 """
 import rclpy
 
-from hanul_hardware_robot import HanulHardware
+from hanul_hardware_nuc import HanulHardware
 from common.omni_odometry import OmniOdometry
 from common.tf_converter import TFConverter
 from common.ros_bridge import RobotROSBridge, init_ros_node, shutdown_ros_node
 
 
 def main():
-    print("Hanul Robot Controller initializing...")
-    robot = HanulHardware(motor_id_left=1, motor_id_right=2, motor_id_back=3)
+    print("Hanul NUC Controller initializing...")
+    robot = HanulHardware(motor_id_left=3, motor_id_right=1, motor_id_back=2)
     print("Real robot hardware (ID L=%s R=%s B=%s) initialized" % (robot.motor_id_left, robot.motor_id_right, robot.motor_id_back))
 
     odometry = OmniOdometry()
     tf_converter = TFConverter()
     init_ros_node()
     ros_bridge = RobotROSBridge('hanul_controller_node')
-    print("Hanul Robot Controller ready\n")
+    print("Hanul NUC Controller ready\n")
 
     print("Starting main loop. Waiting for /cmd_vel...\n")
     step_count = 0

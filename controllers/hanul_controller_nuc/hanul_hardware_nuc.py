@@ -1,5 +1,5 @@
 """
-실제 로봇 하드웨어 인터페이스 (모터 ID 기반)
+NUC 실제 로봇 하드웨어 인터페이스 (모터 ID 기반)
 """
 import time
 from common.omni_inverse_kinematics import OmniKinematics

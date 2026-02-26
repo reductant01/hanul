@@ -16,7 +16,7 @@ Webots 한울 로봇이 `/cmd_vel`로 구동되고, 오도메트리·TF·`/scan`
 cd /mnt/hanul
 ./scripts/hanul/hanul_webots.sh loc   # 저장 맵 + AMCL + Nav2
 ./scripts/hanul/hanul_webots.sh map   # SLAM 맵핑
-./scripts/hanul/hanul_robot.sh        # 실제 로봇
+./scripts/hanul/hanul_nuc.sh          # 실제 로봇 (NUC)
 ```
 
 ---
@@ -24,7 +24,7 @@ cd /mnt/hanul
 ## 구조 요약
 
 - **Webots** `worlds/hanul/hanul.wbt` → 컨트롤러 `controllers/hanul_controller_webots/`가 매 스텝: `/cmd_vel` 구독 → 역기구학 → 모터, 엔코더 → 오도메트리 → odom→base_footprint TF, 라이다 → `/scan`·lidar_link TF.
-- **실제 로봇** `controllers/hanul_controller_robot/` 진입점 `hanul_controller_robot.py`, 하드웨어 `hanul_hardware_robot.py`.
+- **실제 로봇 (NUC)** `controllers/hanul_controller_nuc/` 진입점 `hanul_controller_nuc.py`, 하드웨어 `hanul_hardware_nuc.py`.
 - **공통**: `common/` — `omni_odometry.py`, `omni_inverse_kinematics.py`, `tf_converter.py`, `ros_bridge.py`.
 
 ---

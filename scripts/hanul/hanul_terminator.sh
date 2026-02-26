@@ -1,4 +1,4 @@
-# 한울 터미네이터 레이아웃 + hanul_webots.sh / hanul_robot.sh 공통 변수.
+# 한울 터미네이터 레이아웃 + hanul_webots.sh / hanul_nuc.sh 공통 변수.
 # source 전에 PROJECT_ROOT 설정 필요.
 
 SETUP_CMD="source /opt/ros/jazzy/setup.bash"
@@ -16,7 +16,7 @@ INIT_QW="$(python3 -c "import math; print(math.cos($INIT_YAW / 2.0))")"
 CMD_EMPTY="exec bash"
 CMD_WEBOTS="deactivate 2>/dev/null; $SETUP_CMD; export PYTHONPATH=$PROJECT_ROOT; webots $WEBOTS_WORLD; exec bash"
 CMD_TELEOP="$SETUP_CMD; ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p speed:=0.8 -p turn:=1.0; exec bash"
-CMD_REAL_CONTROLLER="$SETUP_CMD; cd $PROJECT_ROOT/controllers/hanul_controller_robot && PYTHONPATH=$PROJECT_ROOT python3 hanul_controller_robot.py; exec bash"
+CMD_REAL_CONTROLLER="$SETUP_CMD; cd $PROJECT_ROOT/controllers/hanul_controller_nuc && PYTHONPATH=$PROJECT_ROOT:\$PYTHONPATH python3 hanul_controller_nuc.py; exec bash"
 
 write_terminator_config() {
   local CONFIG_FILE="${1:-/tmp/hanul_terminator_config}"
