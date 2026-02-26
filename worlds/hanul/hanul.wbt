@@ -62,7 +62,7 @@ Robot {
       }
       geometry DEF base Mesh {
         url [
-          "../protos/assets/base.stl"
+          "../../protos/hanul/assets/base.stl"
         ]
       }
       castShadows FALSE
@@ -92,7 +92,7 @@ Robot {
             }
             geometry Mesh {
               url [
-                "../protos/assets/Omni Wheel.stl"
+                "../../protos/hanul/assets/Omni Wheel.stl"
               ]
             }
             castShadows FALSE
@@ -142,7 +142,7 @@ Robot {
             }
             geometry Mesh {
               url [
-                "../protos/assets/Omni Wheel.stl"
+                "../../protos/hanul/assets/Omni Wheel.stl"
               ]
             }
             castShadows FALSE
@@ -191,7 +191,7 @@ Robot {
             }
             geometry Mesh {
               url [
-                "../protos/assets/Omni Wheel.stl"
+                "../../protos/hanul/assets/Omni Wheel.stl"
               ]
             }
             castShadows FALSE
@@ -230,7 +230,7 @@ Robot {
       0 0 0
     ]
   }
-  controller "hanul_controller"
+  controller "hanul_controller_webots"
 }
 Table {
   translation 2.5 -1.9 0
