@@ -26,6 +26,8 @@ def main():
 
     t_lidar_static = tf_converter.create_lidar_transform(ros_bridge)
     ros_bridge.publish_static_transform(t_lidar_static)
+    t_laser_static = tf_converter.create_laser_transform(ros_bridge)
+    ros_bridge.publish_static_transform(t_laser_static)
 
     try:
         while rclpy.ok() and robot.step() != -1:

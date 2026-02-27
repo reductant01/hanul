@@ -47,6 +47,11 @@ class TFConverter:
 
         return t_lidar
 
+    def create_laser_transform(self, ros_node):
+        t = self.create_lidar_transform(ros_node)
+        t.child_frame_id = 'laser'
+        return t
+
     def create_laser_scan_msg(self, ranges, fov, min_range, max_range, ros_node, stamp=None):
         from sensor_msgs.msg import LaserScan
 
