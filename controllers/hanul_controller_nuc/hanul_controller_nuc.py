@@ -38,6 +38,10 @@ def main():
             odometry.update(pos_L, pos_R, pos_B)
             x, y, theta = odometry.get_pose()
             stamp = ros_bridge.get_clock().now().to_msg()
+            t_lidar_static.header.stamp = stamp
+            t_laser_static.header.stamp = stamp
+            ros_bridge.publish_static_transform(t_lidar_static)
+            ros_bridge.publish_static_transform(t_laser_static)
             t_odom = tf_converter.create_odometry_transform(
                 x, y, theta, ros_bridge, stamp=stamp
             )
