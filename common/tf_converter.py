@@ -30,9 +30,9 @@ class TFConverter:
 
         return t_odom
 
-    def create_lidar_transform(self, ros_node):
+    def create_lidar_transform(self, ros_node, stamp=None):
         t_lidar = TransformStamped()
-        t_lidar.header.stamp = ros_node.get_clock().now().to_msg()
+        t_lidar.header.stamp = stamp if stamp is not None else ros_node.get_clock().now().to_msg()
         t_lidar.header.frame_id = 'base_footprint'
         t_lidar.child_frame_id = 'lidar_link'
 
@@ -47,8 +47,8 @@ class TFConverter:
 
         return t_lidar
 
-    def create_laser_transform(self, ros_node):
-        t = self.create_lidar_transform(ros_node)
+    def create_laser_transform(self, ros_node, stamp=None):
+        t = self.create_lidar_transform(ros_node, stamp=stamp)
         t.child_frame_id = 'laser'
         return t
 
@@ -70,8 +70,6 @@ class TFConverter:
         scan_msg.angle_max = scan_msg.angle_min + scan_msg.angle_increment * (scan_size - 1)
         scan_msg.range_min = min_range
         scan_msg.range_max = max_range
-        n = scan_size
-        shifted = [ranges[(i + n // 2) % n] for i in range(n)]
-        scan_msg.ranges = [shifted[n - 1 - i] for i in range(n)]
+        scan_msg.ranges = list(ranges)
 
         return scan_msg

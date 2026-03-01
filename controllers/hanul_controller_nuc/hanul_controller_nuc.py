@@ -24,11 +24,6 @@ def main():
     step_count = 0
     log_interval = 1000
 
-    t_lidar_static = tf_converter.create_lidar_transform(ros_bridge)
-    ros_bridge.publish_static_transform(t_lidar_static)
-    t_laser_static = tf_converter.create_laser_transform(ros_bridge)
-    ros_bridge.publish_static_transform(t_laser_static)
-
     try:
         while rclpy.ok() and robot.step() != -1:
             rclpy.spin_once(ros_bridge, timeout_sec=0)
@@ -38,14 +33,14 @@ def main():
             odometry.update(pos_L, pos_R, pos_B)
             x, y, theta = odometry.get_pose()
             stamp = ros_bridge.get_clock().now().to_msg()
-            t_lidar_static.header.stamp = stamp
-            t_laser_static.header.stamp = stamp
-            ros_bridge.publish_static_transform(t_lidar_static)
-            ros_bridge.publish_static_transform(t_laser_static)
             t_odom = tf_converter.create_odometry_transform(
                 x, y, theta, ros_bridge, stamp=stamp
             )
             ros_bridge.publish_transform(t_odom)
+            t_lidar = tf_converter.create_lidar_transform(ros_bridge, stamp=stamp)
+            t_laser = tf_converter.create_laser_transform(ros_bridge, stamp=stamp)
+            ros_bridge.publish_transform(t_lidar)
+            ros_bridge.publish_transform(t_laser)
             lidar_data = robot.get_lidar_data()
             scan_msg = tf_converter.create_laser_scan_msg(
                 lidar_data['ranges'],
