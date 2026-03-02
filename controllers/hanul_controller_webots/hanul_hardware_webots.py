@@ -2,7 +2,7 @@
 Webots 시뮬레이터 장치 인터페이스 (모터, 엔코더, 라이다)
 """
 from controller import Robot
-from common.omni_inverse_kinematics import OmniKinematics
+from common.omni_velocity import OmniVelocityController
 
 
 class HanulWebots:
@@ -30,24 +30,14 @@ class HanulWebots:
         self.lidar = self.robot.getDevice('lidar a1')
         self.lidar.enable(self.timestep)
 
-        self.kinematics = OmniKinematics(max_speed=6.0)
-        self.acceleration_factor = 0.1
-        self.current_vel_L = 0.0
-        self.current_vel_R = 0.0
-        self.current_vel_B = 0.0
+        self.velocity_controller = OmniVelocityController(max_speed=6.0, acceleration_factor=0.1)
 
     def step(self):
         return self.robot.step(self.timestep)
 
     def set_cmd_vel(self, vx, vy, w):
-        target_vel_left, target_vel_right, target_vel_back = \
-            self.kinematics.cmd_vel_to_motor_speed(vx, vy, w)
-
-        self.current_vel_L += self.acceleration_factor * (target_vel_left - self.current_vel_L)
-        self.current_vel_R += self.acceleration_factor * (target_vel_right - self.current_vel_R)
-        self.current_vel_B += self.acceleration_factor * (target_vel_back - self.current_vel_B)
-
-        self._set_motor_velocity(self.current_vel_L, self.current_vel_R, self.current_vel_B)
+        vel_L, vel_R, vel_B = self.velocity_controller.update(vx, vy, w)
+        self._set_motor_velocity(vel_L, vel_R, vel_B)
 
     def _set_motor_velocity(self, vel_L, vel_R, vel_B):
         self.motor_left.setVelocity(vel_L)
@@ -70,4 +60,5 @@ class HanulWebots:
         }
 
     def stop(self):
-        self.set_cmd_vel(0.0, 0.0, 0.0)
+        self.velocity_controller.reset()
+        self._set_motor_velocity(0.0, 0.0, 0.0)

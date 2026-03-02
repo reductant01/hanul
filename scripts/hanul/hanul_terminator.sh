@@ -17,6 +17,7 @@ CMD_EMPTY="exec bash"
 CMD_WEBOTS="deactivate 2>/dev/null; $SETUP_CMD; export PYTHONPATH=$PROJECT_ROOT; webots $WEBOTS_WORLD; exec bash"
 CMD_TELEOP="$SETUP_CMD; ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p speed:=0.8 -p turn:=1.0; exec bash"
 CMD_REAL_CONTROLLER="$SETUP_CMD; cd $PROJECT_ROOT/controllers/hanul_controller_nuc && PYTHONPATH=$PROJECT_ROOT:\$PYTHONPATH python3 hanul_controller_nuc.py; exec bash"
+CMD_LIDAR_A1="$SETUP_CMD; echo 'A1 라이다: 아래에 드라이버 명령 실행 (예: ros2 run ... /scan 발행)'; exec bash"
 
 write_terminator_config() {
   local CONFIG_FILE="${1:-/tmp/hanul_terminator_config}"
