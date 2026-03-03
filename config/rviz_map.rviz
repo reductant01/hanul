@@ -24,7 +24,7 @@ Visualization Manager:
       Selectable: true
       Size (m): 0.01
       Style: Flat Squares
-      Tolerance: 0.1
+      Tolerance: 0.3
       Topic:
         Depth: 50
         Durability Policy: Volatile
@@ -42,13 +42,13 @@ Visualization Manager:
       Enabled: true
       Name: Map
       Topic:
-        Depth: 5
+        Depth: 50
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /map
       Update Topic:
-        Depth: 5
+        Depth: 50
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
