@@ -20,12 +20,12 @@ Visualization Manager:
       Enabled: true
       Name: LaserScan
       Position Transformer: XYZ
-      Queue Size: 10
+      Queue Size: 50
       Selectable: true
       Size (m): 0.01
       Style: Flat Squares
       Topic:
-        Depth: 5
+        Depth: 50
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable

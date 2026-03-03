@@ -1,50 +1,44 @@
 # 1. 로봇 이동 (Robot Movement)
 
-이 문서는 **로봇 이동 단계**에서 겪은 오류와 해결방법을 정리한 것입니다.
+---
+
+## 1. ModuleNotFoundError: No module named 'rclpy' (Webots 컨트롤러 시작 시)
+
+**오류:** Webots 컨트롤러 시작 시 `rclpy`를 찾을 수 없음.
+
+**수정:** (1) Webots를 `./scripts/hanul/hanul_webots.sh map` 또는 `loc`으로 실행. (2) 터미널에 Python 가상환경(.venv)이 켜져 있으면 `deactivate` 후 스크립트 실행. (3) `source /opt/ros/jazzy/setup.bash` 오타 없이 입력.
 
 ---
 
-## 개요
+## 2. lidar_link timestamp earlier than transform cache
 
-Webots 한울 로봇이 `/cmd_vel`로 구동되고, 오도메트리·TF·`/scan`을 발행하는 구조입니다.
+**오류:** 라이다 링크 타임스탬프가 TF 캐시보다 이전이라 경고 또는 오류.
 
----
-
-## 실행 요약
-
-```bash
-cd /mnt/hanul
-./scripts/hanul/hanul_webots.sh loc   # 저장 맵 + AMCL + Nav2
-./scripts/hanul/hanul_webots.sh map   # SLAM 맵핑
-./scripts/hanul/hanul_nuc.sh          # 실제 로봇 (NUC)
-```
+**수정:** odom TF와 스캔에 **동일 stamp**를 사용하도록 controller·tf_converter에서 같은 시각 사용.
 
 ---
 
-## 구조 요약
+## 3. /cmd_vel이 0.01~0.02 수준으로 너무 작음
 
-- **Webots** `worlds/hanul/hanul.wbt` → 컨트롤러 `controllers/hanul_controller_webots/`가 매 스텝: `/cmd_vel` 구독 → 역기구학 → 모터, 엔코더 → 오도메트리 → odom→base_footprint TF, 라이다 → `/scan`·lidar_link TF.
-- **실제 로봇 (NUC)** `controllers/hanul_controller_nuc/` 진입점 `hanul_controller_nuc.py`, 하드웨어 `hanul_hardware_nuc.py`.
-- **공통**: `common/` — `omni_odometry.py`, `omni_inverse_kinematics.py`, `tf_converter.py`, `ros_bridge.py`.
+**오류:** 텔레오프나 Nav2에서 보낸 속도가 실제로는 거의 안 움직이는 수준으로 들어옴.
 
----
-
-## 오류 → 대응
-
-| 현상 | 대응 |
-|------|------|
-| `ModuleNotFoundError: No module named 'rclpy'` (Webots 컨트롤러 시작 시) | (1) Webots를 **반드시** `./scripts/hanul/hanul_webots.sh map` 또는 `loc`으로 실행. (2) 터미널에 **Python 가상환경(.venv)** 이 켜져 있으면 끄고 실행(`deactivate` 후 스크립트 실행). 스크립트는 Webots 탭에서 자동으로 venv를 끄고 ROS를 불러오도록 되어 있음. (3) `source /opt/ros/jazzy/setup.bash` 시 **오타 없이** `setup.bash` 로 입력. |
-| `lidar_link timestamp earlier than transform cache` | odom TF와 스캔에 **동일 stamp** 사용 (controller·tf_converter). |
-| `/cmd_vel`이 0.01~0.02 수준으로 너무 작음 | `common/ros_bridge.py` 작은 cmd_vel 스케일업 옵션. |
-| Y 이동 시 odom y가 실제와 다름(방향/크기) | `common/omni_odometry.py`의 **delta_y 부호** 또는 **odom_scale_y** 보정. [3. 로컬라이제이션](03_localization.md) 참고. |
-| `echo_odom_pose.py` 실행 시 TF extrapolation | 스크립트에서 `Time(0,0)`으로 최신 TF 요청. |
+**수정:** `common/ros_bridge.py`에서 작은 cmd_vel에 대한 스케일업 옵션 사용.
 
 ---
 
-## 확인
+## 4. Y 이동 시 odom y가 실제와 다름(방향/크기)
 
-- Webots만: `source /opt/ros/jazzy/setup.bash` 후 `webots worlds/hanul/hanul.wbt`
-- 오도메트리 Y: 텔레오프로 Y 이동 후 `python3 scripts/echo_odom_pose.py --once` 로 y 변화량 확인.
+**오류:** Y축(옆)으로 이동해도 odom의 y 값이 실제 이동과 방향·크기가 맞지 않음.
+
+**수정:** `common/omni_odometry.py`에서 **delta_y 부호** 또는 **odom_scale_y** 보정. [3. 로컬라이제이션](03_localization.md) 참고.
+
+---
+
+## 5. echo_odom_pose.py 실행 시 TF extrapolation
+
+**오류:** 오도메트리 pose를 조회할 때 TF를 미래로 외삽한다는 경고.
+
+**수정:** 스크립트에서 `Time(0,0)`으로 최신 TF를 요청하도록 변경.
 
 ---
 

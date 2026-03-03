@@ -25,20 +25,29 @@ class RobotROSBridge(Node):
         self.cmd_vel_scale = 30.0
         self.cmd_vel_scale_thresh_linear = 0.05
         self.cmd_vel_scale_thresh_angular = 0.02
-        self.cmd_vel_max = (0.5, 0.5, 1.9)
-        self.cmd_vel_min = (-0.35, -0.5, -1.9)
+        self.linear_speed_max = 0.5
+        self.linear_speed_min = -0.35
+        self.linear_speed_min_vy = -0.5
+        self.angular_speed_max = 0.5
+        self.angular_speed_min = -0.5
+        self.cmd_vel_max = (self.linear_speed_max, self.linear_speed_max, self.angular_speed_max)
+        self.cmd_vel_min = (self.linear_speed_min, self.linear_speed_min_vy, self.angular_speed_min)
 
     def cmd_vel_callback(self, msg):
-        vx = msg.linear.x
-        vy = -msg.linear.y
-        w = msg.angular.z
+        vx = -msg.linear.x
+        vy = msg.linear.y
+        w = -msg.angular.z
         if (abs(vx) < self.cmd_vel_scale_thresh_linear
                 and abs(vy) < self.cmd_vel_scale_thresh_linear
                 and abs(w) < self.cmd_vel_scale_thresh_angular
                 and (vx != 0 or vy != 0 or w != 0)):
-            vx = max(self.cmd_vel_min[0], min(self.cmd_vel_max[0], vx * self.cmd_vel_scale))
-            vy = max(self.cmd_vel_min[1], min(self.cmd_vel_max[1], vy * self.cmd_vel_scale))
-            w = max(self.cmd_vel_min[2], min(self.cmd_vel_max[2], w * self.cmd_vel_scale))
+            vx = max(self.linear_speed_min, min(self.linear_speed_max, vx * self.cmd_vel_scale))
+            vy = max(self.linear_speed_min_vy, min(self.linear_speed_max, vy * self.cmd_vel_scale))
+            w = max(self.angular_speed_min, min(self.angular_speed_max, w * self.cmd_vel_scale))
+        else:
+            vx = max(self.linear_speed_min, min(self.linear_speed_max, vx))
+            vy = max(self.linear_speed_min_vy, min(self.linear_speed_max, vy))
+            w = max(self.angular_speed_min, min(self.angular_speed_max, w))
         with self.cmd_vel_lock:
             self.cmd_vel = [vx, vy, w]
 
