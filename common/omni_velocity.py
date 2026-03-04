@@ -16,6 +16,11 @@ class OmniVelocityController:
 
     def update(self, vx, vy, w):
         target_L, target_R, target_B = self.kinematics.cmd_vel_to_motor_speed(vx, vy, w)
+        if abs(target_L) < 1e-6 and abs(target_R) < 1e-6 and abs(target_B) < 1e-6:
+            self.current_vel_L = 0.0
+            self.current_vel_R = 0.0
+            self.current_vel_B = 0.0
+            return (0.0, 0.0, 0.0)
         self.current_vel_L += self.acceleration_factor * (target_L - self.current_vel_L)
         self.current_vel_R += self.acceleration_factor * (target_R - self.current_vel_R)
         self.current_vel_B += self.acceleration_factor * (target_B - self.current_vel_B)

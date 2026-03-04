@@ -18,8 +18,15 @@ class OmniOdometry:
         self.last_pos_L = 0.0
         self.last_pos_R = 0.0
         self.last_pos_B = 0.0
+        self._first = True
 
     def update(self, pos_L, pos_R, pos_B):
+        if self._first:
+            self._first = False
+            self.last_pos_L = pos_L
+            self.last_pos_R = pos_R
+            self.last_pos_B = pos_B
+            return 0.0, 0.0, 0.0
         delta_L = (pos_L - self.last_pos_L) * self.R
         delta_R = (pos_R - self.last_pos_R) * self.R
         delta_B = (pos_B - self.last_pos_B) * self.R
@@ -65,3 +72,4 @@ class OmniOdometry:
         self.last_pos_L = 0.0
         self.last_pos_R = 0.0
         self.last_pos_B = 0.0
+        self._first = True
