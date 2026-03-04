@@ -16,8 +16,8 @@ amcl:
     max_particles: 2000
     min_particles: 500
     transform_tolerance: 0.5
-    update_min_d: 0.02
-    update_min_a: 0.02
+    update_min_d: 0.01
+    update_min_a: 0.01
     resample_interval: 1
     robot_model_type: "nav2_amcl::OmniMotionModel"
     alpha1: 0.15

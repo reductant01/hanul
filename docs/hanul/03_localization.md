@@ -6,7 +6,7 @@
 
 **오류:** Y축(옆) 이동 시 맵과 라이다가 어긋나거나 AMCL이 Y 방향을 제대로 반영하지 않음.
 
-**수정:** AMCL이 **amcl_params.yaml** 전체를 쓰도록 `scripts/hanul/hanul_webots.sh`(및 hanul_terminator.sh)에서 `--params-file .../amcl_params.yaml` 사용. 옴니휠은 **OmniMotionModel** 필수.
+**수정:** AMCL이 **config/hanul/amcl_params.yaml** 전체를 쓰도록 `scripts/hanul/hanul_webots.sh`(및 hanul_terminator.sh)에서 `--params-file .../config/hanul/amcl_params.yaml` 사용. 옴니휠은 **OmniMotionModel** 필수.
 
 ---
 
@@ -38,7 +38,7 @@
 
 **오류:** 로봇 회전 시 AMCL이 느리게 따라옴.
 
-**수정:** `amcl_params.yaml`에서 **update_min_a** 줄이기(예: 0.02). 회전이 너무 빠르면 텔레오프 turn 낮추기.
+**수정:** `config/hanul/amcl_params.yaml`에서 **update_min_a** 줄이기(예: 0.02). 회전이 너무 빠르면 텔레오프 turn 낮추기.
 
 ---
 

@@ -13,7 +13,7 @@ class TFConverter:
         self.lidar_y = lidar_y
         self.lidar_z = lidar_z
 
-    def create_odometry_transform(self, x, y, theta, ros_node, stamp=None):
+    def create_odometry_transform(self, x, y, theta, ros_node, stamp=None, yaw_offset=0.0):
         t_odom = TransformStamped()
         t_odom.header.stamp = stamp if stamp is not None else ros_node.get_clock().now().to_msg()
         t_odom.header.frame_id = 'odom'
@@ -23,14 +23,15 @@ class TFConverter:
         t_odom.transform.translation.y = y
         t_odom.transform.translation.z = 0.0
 
+        yaw = theta + yaw_offset
         t_odom.transform.rotation.x = 0.0
         t_odom.transform.rotation.y = 0.0
-        t_odom.transform.rotation.z = math.sin(theta / 2.0)
-        t_odom.transform.rotation.w = math.cos(theta / 2.0)
+        t_odom.transform.rotation.z = math.sin(yaw / 2.0)
+        t_odom.transform.rotation.w = math.cos(yaw / 2.0)
 
         return t_odom
 
-    def create_lidar_transform(self, ros_node, stamp=None):
+    def create_lidar_transform(self, ros_node, stamp=None, lidar_yaw=0.0):
         t_lidar = TransformStamped()
         t_lidar.header.stamp = stamp if stamp is not None else ros_node.get_clock().now().to_msg()
         t_lidar.header.frame_id = 'base_footprint'
@@ -42,13 +43,13 @@ class TFConverter:
 
         t_lidar.transform.rotation.x = 0.0
         t_lidar.transform.rotation.y = 0.0
-        t_lidar.transform.rotation.z = 0.0
-        t_lidar.transform.rotation.w = 1.0
+        t_lidar.transform.rotation.z = math.sin(lidar_yaw / 2.0)
+        t_lidar.transform.rotation.w = math.cos(lidar_yaw / 2.0)
 
         return t_lidar
 
-    def create_laser_transform(self, ros_node, stamp=None):
-        t = self.create_lidar_transform(ros_node, stamp=stamp)
+    def create_laser_transform(self, ros_node, stamp=None, lidar_yaw=0.0):
+        t = self.create_lidar_transform(ros_node, stamp=stamp, lidar_yaw=lidar_yaw)
         t.child_frame_id = 'laser'
         return t
 

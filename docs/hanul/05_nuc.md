@@ -60,11 +60,19 @@
 
 ---
 
-## 8. RViz "Message Filter dropping message" (queue full)
+## 8. RViz "Message Filter dropping message" (lidar_link 타임스탬프) / Local Costmap 오류
 
-**오류:** RViz에서 laser 프레임 메시지가 큐가 가득 차서 버려진다는 경고.
+**오류:** RViz에서 "Message Filter dropping message: frame 'lidar_link' at time ... the timestamp on the message is earlier than all the data in the transform cache" 경고가 반복되고, Local Costmap 디스플레이에 주황색 느낌표 오류가 뜸. 스캔·TF 타임스탬프 불일치로 메시지가 버려짐.
 
-**수정:** `config/rviz_map.rviz`, `config/rviz_loc.rviz`에서 LaserScan의 Topic Depth·Queue Size를 50으로 증가. SLAM 쪽 `config/slam_toolbox_params.yaml`에서 throttle_scans 증가로 발행 속도 완화 가능.
+**수정:** (1) `config/hanul/rviz_map.rviz`, `config/hanul/rviz_loc.rviz`에서 LaserScan 디스플레이의 **Tolerance를 10.0**으로 설정해, 타임스탬프가 TF 캐시보다 조금 오래된 메시지도 표시되도록 함. (2) Local Costmap이 스캔을 수용하도록 `config/hanul/nav2_params.yaml`의 local_costmap → voxel_layer에 **tf_filter_tolerance: 10.0** 추가. (3) global_costmap → obstacle_layer에도 **tf_filter_tolerance: 10.0** 추가.
+
+---
+
+## 9. Webots 옴니휠·스캔·odom 방향이 NUC 실제 로봇과 다름
+
+**오류:** Webots 시뮬레이션에서 옴니휠의 양의 회전 방향이 NUC 실제 로봇과 반대이고, 스캔 각도 순서와 odom 방향이 맞지 않아 시뮬레이션만 다른 동작을 함.
+
+**수정:** NUC와 동일하게 보이도록 Webots 쪽만 수정. (1) **스캔 배열 순서:** `controllers/hanul_controller_webots/hanul_controller_webots.py`에서 라이다 데이터를 `lidar_data['ranges'][::-1]`로 역순하여 LaserScan에 넣음. (2) **odom yaw:** `common/tf_converter.py`의 `create_odometry_transform`에 `yaw_offset` 인자 추가, Webots에서 필요 시 호출 시 `yaw_offset`으로 방향 보정. (3) **vy·vx·w 부호:** Webots에서만 `robot.set_cmd_vel(-vx, -vy, -w)`로 전달해 실제 로봇과 같은 방향으로 구동되도록 함.
 
 ---
 

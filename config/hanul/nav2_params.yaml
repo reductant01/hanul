@@ -1,5 +1,5 @@
 # =============================================================================
-# Nav2 파라미터 (config/nav2_params.yaml)
+# Nav2 파라미터 (config/hanul/nav2_params.yaml)
 # =============================================================================
 # loc 모드에서 "Nav2" 터미널 하나가 bringup_launch.py로 아래 노드들을 한 번에 실행합니다.
 # 맵 로딩(map_server) + 위치 추정(amcl) + 경로 계획(planner) + 경로 추종(controller) + 목표 처리(bt_navigator) 등.
@@ -91,7 +91,7 @@ controller_server:
       vx_std: 0.25
       vy_std: 0.25
       wz_std: 0.5
-      transform_tolerance: 0.1
+      transform_tolerance: 5.0
       motion_model: "Omni"
       visualize: false
 
@@ -116,6 +116,7 @@ local_costmap:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
         observation_sources: scan
+        tf_filter_tolerance: 10.0
         scan:
           topic: /scan
           data_type: "LaserScan"
@@ -144,6 +145,7 @@ global_costmap:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
         observation_sources: scan
+        tf_filter_tolerance: 10.0
         scan:
           topic: /scan
           data_type: "LaserScan"
@@ -216,7 +218,8 @@ collision_monitor:
     odom_frame_id: "odom"
     cmd_vel_in_topic: "cmd_vel_smoothed"
     cmd_vel_out_topic: "cmd_vel"
-    transform_tolerance: 0.2
+    transform_tolerance: 10.0
+    source_timeout: 15.0
     enabled: False
     polygons: ["PolygonStop"]
     PolygonStop:
@@ -263,8 +266,10 @@ waypoint_follower:
       enabled: True
       waypoint_pause_duration: 200
 
-# [맵 저장 시] ros2 run nav2_map_server map_saver_cli 할 때 쓰는 설정 (bringup 터미널과는 별도)
+# [맵 저장 시] scripts/hanul/save_hanul_map.sh 또는 --params-file config/hanul/map_saver_params.yaml
 map_saver:
   ros__parameters:
     save_map_timeout: 5.0
     map_subscribe_transient_local: True
+    free_thresh_default: 0.25
+    occupied_thresh_default: 0.65

@@ -4,8 +4,8 @@
 SETUP_CMD="source /opt/ros/jazzy/setup.bash"
 WEBOTS_WORLD="${PROJECT_ROOT}/worlds/hanul/hanul.wbt"
 MAP_YAML="${PROJECT_ROOT}/maps/hanul/hanul_map.yaml"
-RVIZ_MAP_CONFIG="${PROJECT_ROOT}/config/rviz_map.rviz"
-RVIZ_LOC_CONFIG="${PROJECT_ROOT}/config/rviz_loc.rviz"
+RVIZ_MAP_CONFIG="${PROJECT_ROOT}/config/hanul/rviz_map.rviz"
+RVIZ_LOC_CONFIG="${PROJECT_ROOT}/config/hanul/rviz_loc.rviz"
 
 INIT_X=0.0
 INIT_Y=0.0

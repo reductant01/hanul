@@ -20,13 +20,13 @@ Visualization Manager:
       Enabled: true
       Name: LaserScan
       Position Transformer: XYZ
-      Queue Size: 50
+      Queue Size: 100
       Selectable: true
       Size (m): 0.01
       Style: Flat Squares
-      Tolerance: 0.3
+      Tolerance: 10.0
       Topic:
-        Depth: 50
+        Depth: 100
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
@@ -35,25 +35,6 @@ Visualization Manager:
     - Class: rviz_default_plugins/TF
       Enabled: true
       Name: TF
-    - Class: rviz_default_plugins/PoseArray
-      Enabled: true
-      Name: Amcl Particle Swarm
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Best Effort
-        Value: /particle_cloud
-    - Class: rviz_default_plugins/Path
-      Color: 0; 255; 0
-      Enabled: true
-      Name: Global Plan
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /plan
     - Alpha: 0.7
       Class: rviz_default_plugins/Map
       Color Scheme: map
@@ -62,7 +43,7 @@ Visualization Manager:
       Name: Map
       Topic:
         Depth: 50
-        Durability Policy: Transient Local
+        Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /map
@@ -72,47 +53,11 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /map_updates
-    - Alpha: 0.5
-      Class: rviz_default_plugins/Map
-      Color Scheme: costmap
-      Draw Behind: false
-      Enabled: true
-      Name: Local Costmap
-      Topic:
-        Depth: 5
-        Durability Policy: Transient Local
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /local_costmap/costmap
-      Update Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /local_costmap/costmap_updates
-    - Alpha: 0.5
-      Class: rviz_default_plugins/Map
-      Color Scheme: costmap
-      Draw Behind: false
-      Enabled: true
-      Name: Global Costmap
-      Topic:
-        Depth: 5
-        Durability Policy: Transient Local
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /global_costmap/costmap
-      Update Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /global_costmap/costmap_updates
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Fixed Frame: map
-    Frame Rate: 30
+    Frame Rate: 10
   Name: root
   Tools:
     - Class: rviz_default_plugins/Interact
