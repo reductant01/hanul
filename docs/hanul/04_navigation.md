@@ -2,6 +2,17 @@
 
 ---
 
+## Nav2 사용 순서 (공식 문서 권장)
+
+1. **Nav2·로봇(Webots/NUC) 기동** 후 RViz에서 loc 설정 로드.
+2. **2D Pose Estimate** 버튼 선택 → 맵에서 **로봇이 실제로 있는 위치**를 클릭한 뒤, **방향**을 드래그로 설정. (초기 위치를 주지 않으면 로봇 위치를 모르므로 TF 트리가 완성되지 않고 목표 동작이 불안정함.)
+3. **로봇과 파티클 구름(Amcl Particle Swarm)** 이 맵 위에 보이고, TF 트리가 이어졌는지 확인한 뒤 **그 다음에** 목표 전송.
+4. **Nav2 Goal** 버튼 선택 → 맵에서 목표 지점 클릭·드래그로 방향 설정. 경로가 생성되면 로봇이 이동함.
+
+초기 포즈를 설정하지 않거나 잘못된 위치에 두면 map→odom·AMCL이 틀어져 경로는 나와도 cmd_vel이 거의 0이 되거나 회전만 할 수 있음.
+
+---
+
 ## 1. observation_sources / polygons / dock_plugins 미초기화
 
 **오류:** config/hanul/nav2_params.yaml 관련해 observation_sources, polygons, dock_plugins 미초기화 오류.

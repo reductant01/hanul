@@ -20,13 +20,13 @@ Visualization Manager:
       Enabled: true
       Name: LaserScan
       Position Transformer: XYZ
-      Queue Size: 100
+      Queue Size: 500
       Selectable: true
       Size (m): 0.01
       Style: Flat Squares
       Tolerance: 10.0
       Topic:
-        Depth: 100
+        Depth: 200
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
@@ -112,7 +112,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Fixed Frame: map
-    Frame Rate: 30
+    Frame Rate: 10
   Name: root
   Tools:
     - Class: rviz_default_plugins/Interact
@@ -127,6 +127,11 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /initialpose
+    - Class: nav2_rviz_plugins/GoalTool
+      Transformation:
+        Current:
+          Class: rviz_default_plugins/TF
+          Value: true
   Views:
     Current:
       Class: rviz_default_plugins/Orbit

@@ -16,29 +16,28 @@ class RobotROSBridge(Node):
         super().__init__(node_name)
 
         self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_callback, 10)
+        self.cmd_vel_to_robot_pub = self.create_publisher(Twist, '/cmd_vel_to_robot', 10)
         self.scan_publisher = self.create_publisher(LaserScan, '/scan', 10)
         self.tf_broadcaster = TransformBroadcaster(self)
         self.static_tf_broadcaster = StaticTransformBroadcaster(self)
 
         self.cmd_vel = [0.0, 0.0, 0.0]
         self.cmd_vel_lock = threading.Lock()
-        self.cmd_vel_scale = 30.0
-        self.cmd_vel_scale_thresh_linear = 0.01
-        self.cmd_vel_scale_thresh_angular = 0.01
 
     def cmd_vel_callback(self, msg):
         vx = -msg.linear.x
         vy = msg.linear.y
         w = -msg.angular.z
-        if (abs(vx) < self.cmd_vel_scale_thresh_linear
-                and abs(vy) < self.cmd_vel_scale_thresh_linear
-                and abs(w) < self.cmd_vel_scale_thresh_angular
-                and (vx != 0 or vy != 0 or w != 0)):
-            vx *= self.cmd_vel_scale
-            vy *= self.cmd_vel_scale
-            w *= self.cmd_vel_scale
         with self.cmd_vel_lock:
             self.cmd_vel = [vx, vy, w]
+        out = Twist()
+        out.linear.x = float(vx)
+        out.linear.y = float(vy)
+        out.linear.z = 0.0
+        out.angular.x = 0.0
+        out.angular.y = 0.0
+        out.angular.z = float(w)
+        self.cmd_vel_to_robot_pub.publish(out)
 
     def get_cmd_vel(self):
         with self.cmd_vel_lock:

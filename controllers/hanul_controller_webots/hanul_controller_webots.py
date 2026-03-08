@@ -29,22 +29,25 @@ def main():
     tf_converter = TFConverter()
     init_ros_node()
     ros_bridge = RobotROSBridge('hanul_controller_node')
+    stamp = ros_bridge.get_clock().now().to_msg()
+    ros_bridge.publish_transform(tf_converter.create_odometry_transform(0.0, 0.0, 0.0, ros_bridge, stamp=stamp, yaw_offset=0.0))
+    ros_bridge.publish_transform(tf_converter.create_lidar_transform(ros_bridge, stamp=stamp, lidar_yaw=math.pi))
     print("Hanul Webots Controller ready\n")
 
     print("Starting main loop. Waiting for /cmd_vel...\n")
     step_count = 0
     log_interval = 1000
-    scan_throttle = 4
+    scan_throttle = 8
 
     try:
         while rclpy.ok() and robot.step() != -1:
             rclpy.spin_once(ros_bridge, timeout_sec=0)
+            stamp = ros_bridge.get_clock().now().to_msg()
             vx, vy, w = ros_bridge.get_cmd_vel()
             robot.set_cmd_vel(-vx, -vy, -w)
             pos_L, pos_R, pos_B = robot.get_encoder_values()
             odometry.update(pos_L, pos_R, pos_B)
             x, y, theta = odometry.get_pose()
-            stamp = ros_bridge.get_clock().now().to_msg()
             t_odom = tf_converter.create_odometry_transform(
                 x, y, theta, ros_bridge, stamp=stamp, yaw_offset=0.0
             )
@@ -52,6 +55,7 @@ def main():
             t_lidar = tf_converter.create_lidar_transform(ros_bridge, stamp=stamp, lidar_yaw=math.pi)
             ros_bridge.publish_transform(t_lidar)
             if step_count % scan_throttle == 0:
+                ros_bridge.publish_transform(tf_converter.create_map_odom_identity(ros_bridge, stamp=stamp))
                 lidar_data = robot.get_lidar_data()
                 scan_msg = tf_converter.create_laser_scan_msg(
                     lidar_data['ranges'][::-1],
