@@ -94,6 +94,13 @@ controller_server:
       transform_tolerance: 5.0
       motion_model: "Omni"
       visualize: false
+      critics: ["ConstraintCritic", "CostCritic", "GoalCritic", "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic", "PathAngleCritic", "PreferForwardCritic"]
+      PathAlignCritic:
+        offset_from_furthest: 80
+      PathFollowCritic:
+        threshold_to_consider: 1.4
+      GoalCritic:
+        threshold_to_consider: 1.4
 
 # [Nav2 터미널 - 로컬 장애물 맵] 로봇 주변만 갱신, controller가 회피에 사용 (라이다 /scan 반영)
 # --- 수정한 변수 역할 ---

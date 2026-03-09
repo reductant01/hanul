@@ -1,7 +1,11 @@
 """
 옴니휠 cmd_vel → 모터 속도(가속 완화 포함) 공통 로직
 """
+import math
 from common.omni_inverse_kinematics import OmniKinematics
+
+BOOST_THRESHOLD = 0.08
+BOOST_SCALE = 15
 
 
 class OmniVelocityController:
@@ -21,6 +25,13 @@ class OmniVelocityController:
         self.current_vel_B = 0.0
 
     def update(self, vx, vy, w):
+        linear_mag = math.hypot(vx, vy)
+        if 0.001 < linear_mag < BOOST_THRESHOLD:
+            vx *= BOOST_SCALE
+            vy *= BOOST_SCALE
+        abs_w = abs(w)
+        if 0.001 < abs_w < BOOST_THRESHOLD:
+            w *= BOOST_SCALE
         vx = max(self.linear_speed_min, min(self.linear_speed_max, vx))
         vy = max(self.linear_speed_min_vy, min(self.linear_speed_max, vy))
         w = max(self.angular_speed_min, min(self.angular_speed_max, w))

@@ -3,6 +3,8 @@ Panels:
     Name: Displays
   - Class: rviz_common/Views
     Name: Views
+  - Class: nav2_rviz_plugins/Navigation 2
+    Name: Navigation 2
 Visualization Manager:
   Class: ""
   Displays:
@@ -18,7 +20,7 @@ Visualization Manager:
       Color Transformer: Intensity
       Decay Time: 0
       Enabled: true
-      Name: LaserScan
+      Name: scan
       Position Transformer: XYZ
       Queue Size: 500
       Selectable: true
@@ -35,9 +37,13 @@ Visualization Manager:
     - Class: rviz_default_plugins/TF
       Enabled: true
       Name: TF
-    - Class: rviz_default_plugins/PoseArray
+    - Class: nav2_rviz_plugins/ParticleCloud
+      Color: 0; 180; 0
       Enabled: true
-      Name: Amcl Particle Swarm
+      Max Arrow Length: 0.3
+      Min Arrow Length: 0.02
+      Name: particle_cloud
+      Shape: Arrow (Flat)
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -47,7 +53,7 @@ Visualization Manager:
     - Class: rviz_default_plugins/Path
       Color: 0; 255; 0
       Enabled: true
-      Name: Global Plan
+      Name: plan
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -59,7 +65,7 @@ Visualization Manager:
       Color Scheme: map
       Draw Behind: false
       Enabled: true
-      Name: Map
+      Name: map
       Topic:
         Depth: 50
         Durability Policy: Transient Local
@@ -77,7 +83,7 @@ Visualization Manager:
       Color Scheme: costmap
       Draw Behind: false
       Enabled: true
-      Name: Local Costmap
+      Name: local_costmap/costmap
       Topic:
         Depth: 5
         Durability Policy: Transient Local
@@ -95,7 +101,7 @@ Visualization Manager:
       Color Scheme: costmap
       Draw Behind: false
       Enabled: true
-      Name: Global Costmap
+      Name: global_costmap/costmap
       Topic:
         Depth: 5
         Durability Policy: Transient Local

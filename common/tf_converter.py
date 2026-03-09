@@ -48,20 +48,6 @@ class TFConverter:
 
         return t_lidar
 
-    def create_map_odom_identity(self, ros_node, stamp=None):
-        t = TransformStamped()
-        t.header.stamp = stamp if stamp is not None else ros_node.get_clock().now().to_msg()
-        t.header.frame_id = 'map'
-        t.child_frame_id = 'odom'
-        t.transform.translation.x = 0.0
-        t.transform.translation.y = 0.0
-        t.transform.translation.z = 0.0
-        t.transform.rotation.x = 0.0
-        t.transform.rotation.y = 0.0
-        t.transform.rotation.z = 0.0
-        t.transform.rotation.w = 1.0
-        return t
-
     def create_laser_transform(self, ros_node, stamp=None, lidar_yaw=0.0):
         t = self.create_lidar_transform(ros_node, stamp=stamp, lidar_yaw=lidar_yaw)
         t.child_frame_id = 'laser'

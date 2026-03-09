@@ -17,6 +17,7 @@ import rclpy
 from hanul_hardware_webots import HanulWebots
 from common.omni_odometry import OmniOdometry
 from common.tf_converter import TFConverter
+from common.map_odom_identity import should_publish_map_odom_identity, create_map_odom_identity
 from common.ros_bridge import RobotROSBridge, init_ros_node, shutdown_ros_node
 
 
@@ -37,7 +38,7 @@ def main():
     print("Starting main loop. Waiting for /cmd_vel...\n")
     step_count = 0
     log_interval = 1000
-    scan_throttle = 8
+    steps_per_scan_and_identity = 8
 
     try:
         while rclpy.ok() and robot.step() != -1:
@@ -54,8 +55,9 @@ def main():
             ros_bridge.publish_transform(t_odom)
             t_lidar = tf_converter.create_lidar_transform(ros_bridge, stamp=stamp, lidar_yaw=math.pi)
             ros_bridge.publish_transform(t_lidar)
-            if step_count % scan_throttle == 0:
-                ros_bridge.publish_transform(tf_converter.create_map_odom_identity(ros_bridge, stamp=stamp))
+            if step_count % steps_per_scan_and_identity == 0:
+                if should_publish_map_odom_identity(x, y, theta):
+                    ros_bridge.publish_transform(create_map_odom_identity(ros_bridge, stamp=stamp))
                 lidar_data = robot.get_lidar_data()
                 scan_msg = tf_converter.create_laser_scan_msg(
                     lidar_data['ranges'][::-1],

@@ -6,7 +6,9 @@
 
 **오류:** Webots 컨트롤러 시작 시 `rclpy`를 찾을 수 없음.
 
-**수정:** (1) Webots를 `./scripts/hanul/hanul_webots.sh map` 또는 `loc`으로 실행. (2) 터미널에 Python 가상환경(.venv)이 켜져 있으면 `deactivate` 후 스크립트 실행. (3) `source /opt/ros/jazzy/setup.bash` 오타 없이 입력.
+**이유:** Webots를 일반 실행하면 ROS 환경이 주입되지 않거나, 터미널에 가상환경(.venv)이 켜져 있어 시스템 ROS가 가려짐.
+
+**수정:** (1) Webots를 `./scripts/hanul/hanul_webots.sh map` 또는 `loc`으로 실행. (2) 가상환경이 켜져 있으면 `deactivate` 후 스크립트 실행. (3) `source /opt/ros/jazzy/setup.bash` 오타 없이 입력.
 
 ---
 
@@ -14,13 +16,17 @@
 
 **오류:** 라이다 링크 타임스탬프가 TF 캐시보다 이전이라 경고 또는 오류.
 
-**수정:** odom TF와 스캔에 **동일 stamp**를 사용하도록 controller·tf_converter에서 같은 시각 사용.
+**이유:** odom TF와 스캔 메시지의 stamp가 달라서 TF 캐시에 맞는 변환이 없음.
+
+**수정:** controller·tf_converter에서 odom TF와 스캔에 **동일 stamp**를 사용하도록 같은 시각 사용.
 
 ---
 
 ## 3. /cmd_vel이 0.01~0.02 수준으로 너무 작음
 
 **오류:** 텔레오프나 Nav2에서 보낸 속도가 실제로는 거의 안 움직이는 수준으로 들어옴.
+
+**이유:** ros_bridge에서 cmd_vel을 그대로 전달할 때 스케일이 작게 적용되거나 물리 엔진/하드웨어 특성상 작게 반영됨.
 
 **수정:** `common/ros_bridge.py`에서 작은 cmd_vel에 대한 스케일업 옵션 사용.
 
@@ -30,6 +36,8 @@
 
 **오류:** Y축(옆)으로 이동해도 odom의 y 값이 실제 이동과 방향·크기가 맞지 않음.
 
+**이유:** 옴니휠 오도메트리에서 delta_y 부호 또는 odom_scale_y가 실제와 다르게 설정됨.
+
 **수정:** `common/omni_odometry.py`에서 **delta_y 부호** 또는 **odom_scale_y** 보정. [3. 로컬라이제이션](03_localization.md) 참고.
 
 ---
@@ -37,6 +45,8 @@
 ## 5. echo_odom_pose.py 실행 시 TF extrapolation
 
 **오류:** 오도메트리 pose를 조회할 때 TF를 미래로 외삽한다는 경고.
+
+**이유:** 특정 시각으로 TF를 요청했을 때 그 시각에 맞는 변환이 아직 없음.
 
 **수정:** 스크립트에서 `Time(0,0)`으로 최신 TF를 요청하도록 변경.
 
