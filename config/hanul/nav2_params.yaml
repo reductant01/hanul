@@ -1,5 +1,5 @@
 # =============================================================================
-# Nav2 파라미터 (config/nav2_params.yaml)
+# Nav2 파라미터 (config/hanul/nav2_params.yaml)
 # =============================================================================
 # loc 모드에서 "Nav2" 터미널 하나가 bringup_launch.py로 아래 노드들을 한 번에 실행합니다.
 # 맵 로딩(map_server) + 위치 추정(amcl) + 경로 계획(planner) + 경로 추종(controller) + 목표 처리(bt_navigator) 등.
@@ -76,24 +76,33 @@ controller_server:
     general_goal_checker:
       stateful: True
       plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 0.25
-      yaw_goal_tolerance: 0.25
+      xy_goal_tolerance: 0.1
+      yaw_goal_tolerance: 0.1
     FollowPath:
       plugin: "nav2_mppi_controller::MPPIController"
       time_steps: 56
       model_dt: 0.05
       batch_size: 2000
-      vx_max: 0.5
-      vx_min: -0.35
-      vy_max: 0.5
-      vy_min: -0.5
-      wz_max: 1.9
+      vx_max: 0.8
+      vx_min: -0.5
+      vy_max: 0.8
+      vy_min: -0.8
+      wz_max: 1.0
       vx_std: 0.25
       vy_std: 0.25
       wz_std: 0.5
-      transform_tolerance: 0.1
+      transform_tolerance: 5.0
       motion_model: "Omni"
       visualize: false
+      critics: ["ConstraintCritic", "CostCritic", "GoalCritic", "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic", "PathAngleCritic", "PreferForwardCritic"]
+      PathAlignCritic:
+        offset_from_furthest: 80
+      PathFollowCritic:
+        threshold_to_consider: 1.4
+      GoalCritic:
+        threshold_to_consider: 1.4
+      PreferForwardCritic:
+        cost_weight: 10.0
 
 # [Nav2 터미널 - 로컬 장애물 맵] 로봇 주변만 갱신, controller가 회피에 사용 (라이다 /scan 반영)
 # --- 수정한 변수 역할 ---
@@ -116,6 +125,7 @@ local_costmap:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
         observation_sources: scan
+        tf_filter_tolerance: 10.0
         scan:
           topic: /scan
           data_type: "LaserScan"
@@ -124,7 +134,7 @@ local_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        inflation_radius: 0.70
+        inflation_radius: 0.55
 
 # [Nav2 터미널 - 전역 장애물 맵] 맵 전체, planner가 경로 계획할 때 사용 (정적 맵 + 라이다)
 # --- 수정한 변수 역할 ---
@@ -144,6 +154,7 @@ global_costmap:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
         observation_sources: scan
+        tf_filter_tolerance: 10.0
         scan:
           topic: /scan
           data_type: "LaserScan"
@@ -155,7 +166,7 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        inflation_radius: 0.7
+        inflation_radius: 0.55
 
 # [Nav2 터미널 - 경로 계획] 목표까지 경로 생성 (global_costmap 기반)
 planner_server:
@@ -209,23 +220,43 @@ velocity_smoother:
     odom_topic: "odom"
     velocity_timeout: 1.0
 
-# [Nav2 터미널 - 충돌 감지] 장애물 접근 시 속도 제한/정지 (enabled: false면 미사용, polygons/observation_sources 필수)
+# [Nav2 터미널 - 충돌 감지] approach circle(로봇 크기) + stop box + slowdown box
+# collision_monitor 출력을 cmd_vel로 두어 로봇이 바로 사용 (escape 노드 제거)
 collision_monitor:
   ros__parameters:
     base_frame_id: "base_footprint"
     odom_frame_id: "odom"
     cmd_vel_in_topic: "cmd_vel_smoothed"
     cmd_vel_out_topic: "cmd_vel"
-    transform_tolerance: 0.2
-    enabled: False
-    polygons: ["PolygonStop"]
+    enable_stamped_cmd_vel: False
+    transform_tolerance: 10.0
+    source_timeout: 15.0
+    enabled: True
+    polygons: ["CircleApproach", "PolygonStop", "PolygonSlow"]
+    CircleApproach:
+      type: "circle"
+      radius: 0.17
+      action_type: "approach"
+      min_points: 2
+      time_before_collision: 2.0
+      simulation_time_step: 0.02
+      visualize: False
+      polygon_pub_topic: "polygon_approach"
     PolygonStop:
       type: "polygon"
-      points: "[[0.3, 0.2], [0.3, -0.2], [0.0, -0.2], [0.0, 0.2]]"
+      points: "[[0.3, 0.3], [0.3, -0.3], [-0.3, -0.3], [-0.3, 0.3]]"
       action_type: "stop"
       min_points: 4
       visualize: False
       polygon_pub_topic: "polygon_stop"
+    PolygonSlow:
+      type: "polygon"
+      points: "[[0.6, 0.6], [0.6, -0.6], [-0.6, -0.6], [-0.6, 0.6]]"
+      action_type: "slowdown"
+      min_points: 4
+      slowdown_ratio: 0.3
+      visualize: False
+      polygon_pub_topic: "polygon_slowdown"
     observation_sources: ["scan"]
     scan:
       type: "scan"
@@ -263,8 +294,10 @@ waypoint_follower:
       enabled: True
       waypoint_pause_duration: 200
 
-# [맵 저장 시] ros2 run nav2_map_server map_saver_cli 할 때 쓰는 설정 (bringup 터미널과는 별도)
+# [맵 저장 시] scripts/hanul/save_hanul_map.sh 또는 --params-file config/hanul/map_saver_params.yaml
 map_saver:
   ros__parameters:
     save_map_timeout: 5.0
     map_subscribe_transient_local: True
+    free_thresh_default: 0.25
+    occupied_thresh_default: 0.65

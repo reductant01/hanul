@@ -8,12 +8,15 @@ import math
 class TFConverter:
     """오도메트리·라이다 데이터를 ROS TF / LaserScan 메시지로 변환"""
 
-    def __init__(self, lidar_x=0.09, lidar_y=0.0, lidar_z=0.12375):
+    def __init__(self, lidar_x=0.085, lidar_y=0.0, lidar_z=0.113,
+                 lidar_range_min=0.05, lidar_range_max=30.0):
         self.lidar_x = lidar_x
         self.lidar_y = lidar_y
         self.lidar_z = lidar_z
+        self.lidar_range_min = lidar_range_min
+        self.lidar_range_max = lidar_range_max
 
-    def create_odometry_transform(self, x, y, theta, ros_node, stamp=None):
+    def create_odometry_transform(self, x, y, theta, ros_node, stamp=None, yaw_offset=0.0):
         t_odom = TransformStamped()
         t_odom.header.stamp = stamp if stamp is not None else ros_node.get_clock().now().to_msg()
         t_odom.header.frame_id = 'odom'
@@ -23,14 +26,15 @@ class TFConverter:
         t_odom.transform.translation.y = y
         t_odom.transform.translation.z = 0.0
 
+        yaw = theta + yaw_offset
         t_odom.transform.rotation.x = 0.0
         t_odom.transform.rotation.y = 0.0
-        t_odom.transform.rotation.z = math.sin(theta / 2.0)
-        t_odom.transform.rotation.w = math.cos(theta / 2.0)
+        t_odom.transform.rotation.z = math.sin(yaw / 2.0)
+        t_odom.transform.rotation.w = math.cos(yaw / 2.0)
 
         return t_odom
 
-    def create_lidar_transform(self, ros_node, stamp=None):
+    def create_lidar_transform(self, ros_node, stamp=None, lidar_yaw=0.0):
         t_lidar = TransformStamped()
         t_lidar.header.stamp = stamp if stamp is not None else ros_node.get_clock().now().to_msg()
         t_lidar.header.frame_id = 'base_footprint'
@@ -42,13 +46,13 @@ class TFConverter:
 
         t_lidar.transform.rotation.x = 0.0
         t_lidar.transform.rotation.y = 0.0
-        t_lidar.transform.rotation.z = 0.0
-        t_lidar.transform.rotation.w = 1.0
+        t_lidar.transform.rotation.z = math.sin(lidar_yaw / 2.0)
+        t_lidar.transform.rotation.w = math.cos(lidar_yaw / 2.0)
 
         return t_lidar
 
-    def create_laser_transform(self, ros_node, stamp=None):
-        t = self.create_lidar_transform(ros_node, stamp=stamp)
+    def create_laser_transform(self, ros_node, stamp=None, lidar_yaw=0.0):
+        t = self.create_lidar_transform(ros_node, stamp=stamp, lidar_yaw=lidar_yaw)
         t.child_frame_id = 'laser'
         return t
 
@@ -68,8 +72,8 @@ class TFConverter:
         else:
             scan_msg.angle_increment = 0.0
         scan_msg.angle_max = scan_msg.angle_min + scan_msg.angle_increment * (scan_size - 1)
-        scan_msg.range_min = min_range
-        scan_msg.range_max = max_range
+        scan_msg.range_min = self.lidar_range_min
+        scan_msg.range_max = self.lidar_range_max
         scan_msg.ranges = list(ranges)
 
         return scan_msg
