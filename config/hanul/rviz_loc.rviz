@@ -114,6 +114,36 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /global_costmap/costmap_updates
+    - Class: rviz_default_plugins/Polygon
+      Color: 255; 180; 0
+      Enabled: true
+      Name: polygon_approach
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /polygon_approach
+    - Class: rviz_default_plugins/Polygon
+      Color: 255; 0; 0
+      Enabled: true
+      Name: polygon_stop
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /polygon_stop
+    - Class: rviz_default_plugins/Polygon
+      Color: 0; 100; 255
+      Enabled: true
+      Name: polygon_slowdown
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /polygon_slowdown
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48

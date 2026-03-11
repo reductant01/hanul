@@ -55,6 +55,7 @@ def main():
             ros_bridge.publish_transform(t_odom)
             t_lidar = tf_converter.create_lidar_transform(ros_bridge, stamp=stamp, lidar_yaw=math.pi)
             ros_bridge.publish_transform(t_lidar)
+            ros_bridge.publish_collision_polygons_rviz(stamp=stamp)
             if step_count % steps_per_scan_and_identity == 0:
                 if should_publish_map_odom_identity(x, y, theta):
                     ros_bridge.publish_transform(create_map_odom_identity(ros_bridge, stamp=stamp))

@@ -27,7 +27,7 @@ class HanulWebots:
         for sensor in [self.sensor_left, self.sensor_right, self.sensor_back]:
             sensor.enable(self.timestep)
 
-        self.lidar = self.robot.getDevice('lidar a1')
+        self.lidar = self.robot.getDevice('lidar s2')
         self.lidar.enable(self.timestep)
 
         self.velocity_controller = OmniVelocityController(max_speed=6.0, acceleration_factor=0.1)

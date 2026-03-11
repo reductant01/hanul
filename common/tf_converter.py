@@ -8,10 +8,13 @@ import math
 class TFConverter:
     """오도메트리·라이다 데이터를 ROS TF / LaserScan 메시지로 변환"""
 
-    def __init__(self, lidar_x=0.09, lidar_y=0.0, lidar_z=0.12375):
+    def __init__(self, lidar_x=0.085, lidar_y=0.0, lidar_z=0.113,
+                 lidar_range_min=0.05, lidar_range_max=30.0):
         self.lidar_x = lidar_x
         self.lidar_y = lidar_y
         self.lidar_z = lidar_z
+        self.lidar_range_min = lidar_range_min
+        self.lidar_range_max = lidar_range_max
 
     def create_odometry_transform(self, x, y, theta, ros_node, stamp=None, yaw_offset=0.0):
         t_odom = TransformStamped()
@@ -69,8 +72,8 @@ class TFConverter:
         else:
             scan_msg.angle_increment = 0.0
         scan_msg.angle_max = scan_msg.angle_min + scan_msg.angle_increment * (scan_size - 1)
-        scan_msg.range_min = min_range
-        scan_msg.range_max = max_range
+        scan_msg.range_min = self.lidar_range_min
+        scan_msg.range_max = self.lidar_range_max
         scan_msg.ranges = list(ranges)
 
         return scan_msg

@@ -11,7 +11,7 @@ BOOST_SCALE = 15
 class OmniVelocityController:
 
     def __init__(self, max_speed=6.0, acceleration_factor=0.1,
-                 linear_speed_max=0.5, linear_speed_min=-0.5, linear_speed_min_vy=-0.5,
+                 linear_speed_max=0.8, linear_speed_min=-0.8, linear_speed_min_vy=-0.8,
                  angular_speed_max=0.5, angular_speed_min=-0.5):
         self.kinematics = OmniKinematics(max_speed=max_speed)
         self.acceleration_factor = acceleration_factor

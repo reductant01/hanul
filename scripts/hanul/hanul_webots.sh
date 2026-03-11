@@ -20,13 +20,13 @@ if [[ "$MODE" == "map" ]]; then
   TITLE_TOP_2="SLAM Toolbox"
   TITLE_TOP_3="Empty"
   TITLE_TOP_4="Empty"
-  TITLE_BOTTOM_3="Empty"
+  TITLE_BOTTOM_3="Collision Monitor"
+  TITLE_BOTTOM_4="Empty"
   CMD_TOP_2="$SETUP_CMD; ros2 launch slam_toolbox online_async_launch.py use_sim_time:=false slam_params_file:=$PROJECT_ROOT/config/hanul/slam_toolbox_params.yaml; exec bash"
   CMD_TOP_3="$CMD_EMPTY"
   CMD_TOP_4="$CMD_EMPTY"
-  CMD_BOTTOM_3="$CMD_EMPTY"
+  CMD_BOTTOM_3="$CMD_COLLISION_MONITOR"
   CMD_BOTTOM_4="$CMD_EMPTY"
-  TITLE_BOTTOM_4="Empty"
   CMD_RVIZ="$SETUP_CMD; ros2 run rviz2 rviz2 -d $RVIZ_MAP_CONFIG --ros-args -p use_sim_time:=false; exec bash"
 elif [[ "$MODE" == "loc" ]]; then
   TITLE_TOP_1="Webots"
@@ -41,7 +41,7 @@ elif [[ "$MODE" == "loc" ]]; then
   CMD_TOP_3="$SETUP_CMD; ros2 run nav2_amcl amcl --ros-args -p use_sim_time:=false --params-file $PROJECT_ROOT/config/hanul/amcl_params.yaml; exec bash"
   CMD_TOP_4="$SETUP_CMD; ros2 run nav2_lifecycle_manager lifecycle_manager --ros-args -r __node:=lifecycle_manager_localization -p use_sim_time:=false -p autostart:=true -p node_names:=\"['map_server', 'amcl']\"; exec bash"
   CMD_BOTTOM_3="$SETUP_CMD; sleep 4; cd $PROJECT_ROOT && python3 scripts/amcl_pose_estimate.py --origin; exec bash"
-  CMD_BOTTOM_4="$SETUP_CMD; sleep 1; cd $PROJECT_ROOT && python3 scripts/wait_for_odom.py 6; ros2 launch nav2_bringup navigation_launch.py params_file:=$PROJECT_ROOT/config/hanul/nav2_params.yaml use_sim_time:=false autostart:=True; exec bash"
+  CMD_BOTTOM_4="$SETUP_CMD; sleep 1; cd $PROJECT_ROOT && python3 scripts/wait_for_odom.py 6; (ros2 launch nav2_bringup navigation_launch.py params_file:=$PROJECT_ROOT/config/hanul/nav2_params.yaml use_sim_time:=false autostart:=True &); sleep 8; exec bash"
   CMD_RVIZ="$SETUP_CMD; sleep 6; ros2 run rviz2 rviz2 -d $RVIZ_LOC_CONFIG --ros-args -p use_sim_time:=false; exec bash"
 fi
 
