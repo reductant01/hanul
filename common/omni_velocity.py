@@ -1,5 +1,6 @@
 """
-옴니휠 cmd_vel → 모터 속도(가속 완화 포함) 공통 로직
+옴니휠 cmd_vel → 모터 속도(가속 완화 포함) 공통 로직.
+실제 이동/회전 속도 한계: linear_speed_max, angular_speed_max (텔레옵은 단위 1 발행).
 """
 import math
 from common.omni_inverse_kinematics import OmniKinematics
@@ -10,7 +11,7 @@ BOOST_SCALE = 15
 
 class OmniVelocityController:
 
-    def __init__(self, max_speed=6.0, acceleration_factor=0.1,
+    def __init__(self, max_speed=6.0, acceleration_factor=0.5,
                  linear_speed_max=0.8, linear_speed_min=-0.8, linear_speed_min_vy=-0.8,
                  angular_speed_max=0.5, angular_speed_min=-0.5):
         self.kinematics = OmniKinematics(max_speed=max_speed)

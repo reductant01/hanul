@@ -85,10 +85,8 @@ def key_to_binding_key(key, shift_pressed, caps_lock=False):
 class TeleopKeyboardHoldNode(Node):
     def __init__(self):
         super().__init__("teleop_keyboard_hold")
-        self.declare_parameter("speed", 0.8)
-        self.declare_parameter("turn", 0.5)
-        self._speed = self.get_parameter("speed").value
-        self._turn = self.get_parameter("turn").value
+        self._speed = 1.0
+        self._turn = 1.0
         self._pressed = set()
         self._shift = False
         self._lock = __import__('threading').Lock()
@@ -160,11 +158,9 @@ def main():
     rclpy.init(args=sys.argv)
     node = TeleopKeyboardHoldNode()
     node.get_logger().info(
-        "Hold keys to move (release to stop).\n"
-        "  speed=%.2f  turn=%.2f\n"
-        "  Move: u i o / j k l / m , .  (Shift+key, CapsLock+key: strafe)\n"
-        "  Speed: q/z=both +-/10%%, w/x=linear +-/10%%, e/c=turn +-/10%%"
-        % (node._speed, node._turn)
+        "Hold keys to move (release to stop). Unit scale (speed in omni_velocity).\n"
+        "  Move: u i o / j k l / m , .  (Shift/Caps: strafe)\n"
+        "  q/z w/x e/c: scale +-/10%%"
     )
     old_term = None
     if sys.platform != "win32" and sys.stdin.isatty():
