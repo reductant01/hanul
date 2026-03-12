@@ -8,11 +8,11 @@
 
 **이유:** costmap·스캔은 map→odom→base_footprint→lidar_link TF가 필요한데, map→odom은 AMCL이 스캔 처리 **뒤**에만 발행돼서 그 시점에는 TF가 없음.
 
-**수정:** 스캔과 같은 stamp로 **map→odom identity**를 컨트롤러에서 보조 발행. (`common/map_odom_identity.py`)
+**수정:** 스캔과 같은 stamp로 **map→odom identity**를 컨트롤러에서 보조 발행. (`common/tf_map_odom.py`)
 
 ---
 
-## 2. amcl_pose_estimate.py
+## 2. rviz_initial_pose.py
 
 **오류 (2.1):** No AMCL pose. QoS 불일치로 `/amcl_pose` 구독 안 됨.
 
@@ -44,7 +44,7 @@
 
 **이유:** Costmap은 odom TF가 있어야 맵을 만들고 발행함. Nav2가 컨트롤러보다 먼저 떠서, 기동 시점에는 아직 odom이 없음.
 
-**수정:** `hanul_webots.sh` loc 모드에서 Nav2 실행 전에 `scripts/wait_for_odom.py 6` 실행. 재생(▶)을 6초 안에 누르면 costmap이 뜸.
+**수정:** `hanul_webots.sh` loc 모드에서 Nav2 실행 전에 `scripts/wait_tf_odom.py 6` 실행. 재생(▶)을 6초 안에 누르면 costmap이 뜸.
 
 ---
 
@@ -54,7 +54,7 @@
 
 **이유:** RViz에 **ParticleCloud** 디스플레이를 넣었더라도, 디스플레이 타입이나 토픽 경로가 잘못되면 안 보임. AMCL이 발행하는 토픽은 **`/particle_cloud`** 하나뿐이므로, 디스플레이의 Topic 값이 정확히 `/particle_cloud`여야 함. PoseArray가 아니라 **nav2_rviz_plugins의 ParticleCloud** 타입을 써야 함.
 
-**수정:** RViz에서 **By display type**으로 **ParticleCloud**(nav2_rviz_plugins/ParticleCloud) 디스플레이를 추가한 뒤, Topic을 **`/particle_cloud`**로 지정. `rviz_loc.rviz`에는 이미 이렇게 설정돼 있음. 초기 위치(2D Pose Estimate 또는 amcl_pose_estimate.py)를 한 번 준 뒤에는 AMCL이 파티클을 발행해 화면에 보임.
+**수정:** RViz에서 **By display type**으로 **ParticleCloud**(nav2_rviz_plugins/ParticleCloud) 디스플레이를 추가한 뒤, Topic을 **`/particle_cloud`**로 지정. `rviz_loc.rviz`에는 이미 이렇게 설정돼 있음. 초기 위치(2D Pose Estimate 또는 rviz_initial_pose.py)를 한 번 준 뒤에는 AMCL이 파티클을 발행해 화면에 보임.
 
 ---
 
@@ -91,7 +91,7 @@
   **사용처:** Nav2 **controller_server**가 이 경로를 따라 cmd_vel을 만듦. RViz는 `/plan`을 구독해 “계획된 경로”를 녹색 선으로 표시함.
 
 - **TF**  
-  **발행:** map→odom은 **AMCL**, odom→base_footprint 등은 우리 **컨트롤러**(tf_converter), map→odom 보조는 **map_odom_identity**, lidar_link 등도 컨트롤러.  
+  **발행:** map→odom은 **AMCL**, odom→base_footprint 등은 우리 **컨트롤러**(tf_converter), map→odom 보조는 **tf_map_odom**, lidar_link 등도 컨트롤러.  
   **사용처:** 모든 노드가 좌표 변환할 때 사용. RViz는 TF를 구독해 축/프레임을 화면에 그림.
 
 - **Grid**  
@@ -106,14 +106,14 @@
 **우리 설정 요약**
 
 - Collision Monitor 설정은 별도 `collision_monitor_params.yaml`이 아니라 **`config/hanul/nav2_params.yaml`** 의 `collision_monitor:` 블록에 있음. loc 모드에서 `navigation_launch.py`가 이 파일을 쓰므로 **설정은 로드됨**.
-- Jazzy 기준 **nav2_bringup의 `navigation_launch.py`** 에는 Velocity Smoother가 `cmd_vel_smoothed`→`cmd_vel` 리매핑이 **없고**, Collision Monitor가 **이미 포함**되어 있음.  
-  흐름: Controller → `cmd_vel_nav` → Velocity Smoother → `cmd_vel_smoothed` → Collision Monitor → `cmd_vel` → 로봇(ros_bridge).  
+- Jazzy 기준 **nav2_bringup의 `navigation_launch.py`** 에는 Velocity Smoother가 `cmd_vel_unfiltered`→`cmd_vel` 리매핑이 **없고**, Collision Monitor가 **이미 포함**되어 있음.  
+  흐름: Controller → `cmd_vel_nav` → Velocity Smoother → `cmd_vel_unfiltered` → Collision Monitor → `cmd_vel_filtered` → cmd_vel_output → `cmd_vel` → 로봇.  
   따라서 **“Nav2 stack 준비”(리매핑 제거)는 Jazzy에서는 이미 만족**된 상태임.
 
 **점검할 것**
 
 1. **loc 모드에서만 적용**  
-   맵 전용(Teleop만)일 때는 Collision Monitor 탭을 켜야 하고, Teleop은 `cmd_vel_smoothed`로 발행해야 Collision Monitor를 경유함. loc 모드(Nav2 사용)에서는 launch에 Collision Monitor가 포함되어 있으므로 별도 탭 없이 동작해야 함.
+   맵 전용(Teleop만)일 때는 Collision Monitor 탭을 켜야 하고, Teleop은 `cmd_vel_unfiltered`로 발행해야 Collision Monitor를 경유함. loc 모드(Nav2 사용)에서는 launch에 Collision Monitor가 포함되어 있으므로 별도 탭 없이 동작해야 함.
 
 2. **TF**  
    Collision Monitor는 `/scan`을 `base_footprint` 기준으로 폴리곤 안의 점 개수를 셈. **`base_footprint` ↔ 스캔 프레임(예: `lidar_link`) TF**가 있어야 함.  
@@ -130,13 +130,13 @@
 
 ---
 
-## 9. Collision Monitor → cmd_vel 직결
+## 9. Stop 구역에서 후진(탈출) 허용
 
-**현재 구성**
+**구성**
 
-- Teleop(예: `common/teleop_keyboard_hold.py`)은 **`cmd_vel_smoothed`** 에 발행.
-- Collision Monitor는 `cmd_vel_smoothed`를 구독해 감속/정지 처리 후 **`cmd_vel`** 에 발행. 로봇은 **`cmd_vel`** 만 구독.
-- escape 노드는 사용하지 않음. Stop 구역에서는 후진 포함 모두 정지.
+- Teleop → **cmd_vel_unfiltered**(필터 전). Collision Monitor → **cmd_vel_filtered**(필터된). **cmd_vel_output** → **cmd_vel** → 로봇.
+- Stop 구역(min_points 이상)이면 collision_monitor가 cmd_vel_filtered=0. cmd_vel_output은 **cmd_vel_filtered가 0이고** 요청(cmd_vel_unfiltered)에 **후진(linear.x < 0)** 이 있을 때만 요청을 cmd_vel로 통과. 그 외에는 cmd_vel_filtered를 그대로 cmd_vel로 전달.
+- 따라서 전진/횡이동은 막히고, **후진만** 해서 Stop 구역을 벗어날 수 있음.
 
 참고: [Using Collision Monitor — Nav2](https://docs.nav2.org/tutorials/docs/using_collision_monitor.html).
 

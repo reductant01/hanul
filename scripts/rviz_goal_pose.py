@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-맵 원점 (0, 0, 0)으로 Nav2 NavigateToPose 목표 전송.
-loc 모드에서 Nav2가 떠 있는 상태에서 실행.
+Nav2 NavigateToPose 목표 전송. RViz Nav2 Goal을 코드로 대신.
+맵 원점 (0, 0, 0) 또는 지정 (x, y, yaw)로 이동. loc 모드에서 Nav2가 떠 있는 상태에서 실행.
 
 중요: 초기 위치(Initial Pose)를 맵 원점 (0,0,0)으로 두고 이 스크립트를 돌리면,
       경로 길이가 0이라 "목표 도착"으로 바로 끝나고 로봇이 움직이지 않습니다.
@@ -10,8 +10,8 @@ loc 모드에서 Nav2가 떠 있는 상태에서 실행.
 
 사용법:
   source /opt/ros/jazzy/setup.bash
-  python3 scripts/go_to_map_origin.py
-  python3 scripts/go_to_map_origin.py 1.0 0.5   # (1, 0.5) 로 이동
+  python3 scripts/rviz_goal_pose.py
+  python3 scripts/rviz_goal_pose.py 1.0 0.5   # (1, 0.5) 로 이동
 """
 import sys
 
@@ -26,14 +26,15 @@ except ImportError as e:
     sys.exit(1)
 
 
-class GoToMapOrigin(Node):
+class RvizGoalPose(Node):
     def __init__(self):
-        super().__init__("go_to_map_origin")
+        super().__init__("rviz_goal_pose")
         self._client = ActionClient(self, NavigateToPose, "navigate_to_pose")
         self._done = False
         self._succeeded = False
 
     def send_goal(self, x=0.0, y=0.0, yaw=0.0):
+        import math
         goal_msg = NavigateToPose.Goal()
         goal_msg.pose = PoseStamped()
         goal_msg.pose.header.frame_id = "map"
@@ -41,7 +42,6 @@ class GoToMapOrigin(Node):
         goal_msg.pose.pose.position.x = float(x)
         goal_msg.pose.pose.position.y = float(y)
         goal_msg.pose.pose.position.z = 0.0
-        import math
         goal_msg.pose.pose.orientation.x = 0.0
         goal_msg.pose.pose.orientation.y = 0.0
         goal_msg.pose.pose.orientation.z = math.sin(yaw / 2.0)
@@ -84,7 +84,7 @@ class GoToMapOrigin(Node):
 
 def main():
     rclpy.init()
-    node = GoToMapOrigin()
+    node = RvizGoalPose()
     x = 0.0
     y = 0.0
     yaw = 0.0

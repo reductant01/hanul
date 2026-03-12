@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
-cd "$(git rev-parse --show-toplevel)"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$PROJECT_ROOT"
 git fetch origin
 git checkout hanul
 git reset --hard origin/hanul

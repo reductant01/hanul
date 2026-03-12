@@ -4,4 +4,11 @@
 # 사용: source /opt/ros/jazzy/setup.bash && ./scripts/echo_odom_pose.sh
 set -e
 source /opt/ros/jazzy/setup.bash
+echo ""
+echo "실행 명령:"
+echo "  ros2 run tf2_ros tf2_echo odom base_footprint"
+echo ""
+echo "---"
+echo ""
+
 ros2 run tf2_ros tf2_echo odom base_footprint

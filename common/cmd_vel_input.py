@@ -2,7 +2,7 @@
 """
 키를 누르고 있을 때만 cmd_vel 발행, 손 떼면 정지.
 teleop_twist_keyboard와 동일한 키 배치·속도 키(q/z w/x e/c) 사용.
-발행: cmd_vel_smoothed (collision_monitor 입력용).
+발행: cmd_vel_unfiltered (collision_monitor 입력, 필터 전).
 의존: pip install pynput
 """
 import sys
@@ -82,15 +82,15 @@ def key_to_binding_key(key, shift_pressed, caps_lock=False):
     return None
 
 
-class TeleopKeyboardHoldNode(Node):
+class CmdVelInputNode(Node):
     def __init__(self):
-        super().__init__("teleop_keyboard_hold")
+        super().__init__("cmd_vel_input")
         self._speed = 1.0
         self._turn = 1.0
         self._pressed = set()
         self._shift = False
         self._lock = __import__('threading').Lock()
-        self._pub = self.create_publisher(Twist, "cmd_vel_smoothed", 10)
+        self._pub = self.create_publisher(Twist, "cmd_vel_unfiltered", 10)
         self._timer = self.create_timer(0.05, self._publish)
 
     def _apply_speed_key(self, binding_key):
@@ -156,7 +156,7 @@ class TeleopKeyboardHoldNode(Node):
 
 def main():
     rclpy.init(args=sys.argv)
-    node = TeleopKeyboardHoldNode()
+    node = CmdVelInputNode()
     node.get_logger().info(
         "Hold keys to move (release to stop). Unit scale (speed in omni_velocity).\n"
         "  Move: u i o / j k l / m , .  (Shift/Caps: strafe)\n"
