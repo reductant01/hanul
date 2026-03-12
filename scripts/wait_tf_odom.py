@@ -3,7 +3,7 @@
 odom -> base_footprint TF가 나타날 때까지 대기.
 Nav2 기동 전에 실행해 costmap이 항상 뜨도록 할 때 사용.
 
-  python3 scripts/wait_for_odom.py [timeout_sec]
+  python3 scripts/wait_tf_odom.py [timeout_sec]
   timeout_sec: 최대 대기 시간(초). 기본 45. 0이면 무한 대기.
   종료 코드: 0 = 변환 확인됨, 1 = 타임아웃/오류
 """
@@ -29,7 +29,7 @@ def main():
             pass
 
     rclpy.init()
-    node = Node("wait_for_odom")
+    node = Node("wait_tf_odom")
     buffer = Buffer()
     listener = TransformListener(buffer, node)
 

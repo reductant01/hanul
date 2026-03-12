@@ -20,7 +20,7 @@ Visualization Manager:
       Enabled: true
       Name: LaserScan
       Position Transformer: XYZ
-      Queue Size: 100
+      Queue Size: 1000
       Selectable: true
       Size (m): 0.01
       Style: Flat Squares
@@ -35,6 +35,36 @@ Visualization Manager:
     - Class: rviz_default_plugins/TF
       Enabled: true
       Name: TF
+    - Class: rviz_default_plugins/Polygon
+      Color: 255; 180; 0
+      Enabled: true
+      Name: polygon_approach
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /polygon_approach
+    - Class: rviz_default_plugins/Polygon
+      Color: 255; 0; 0
+      Enabled: true
+      Name: polygon_stop
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /polygon_stop
+    - Class: rviz_default_plugins/Polygon
+      Color: 0; 100; 255
+      Enabled: true
+      Name: polygon_slowdown
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /polygon_slowdown
     - Alpha: 0.7
       Class: rviz_default_plugins/Map
       Color Scheme: map

@@ -22,7 +22,7 @@ Visualization Manager:
       Enabled: true
       Name: scan
       Position Transformer: XYZ
-      Queue Size: 500
+      Queue Size: 1000
       Selectable: true
       Size (m): 0.01
       Style: Flat Squares

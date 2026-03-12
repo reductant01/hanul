@@ -4,11 +4,11 @@
 loc 모드에서 Nav2 기동 후 실행.
 
 사용법:
-  python3 scripts/amcl_pose_estimate.py
+  python3 scripts/rviz_initial_pose.py
       → AMCL 현재 추정을 /initialpose로 전송 (기본 동작)
-  python3 scripts/amcl_pose_estimate.py --origin [x [y [yaw]]]
+  python3 scripts/rviz_initial_pose.py --origin [x [y [yaw]]]
       → 고정 포즈 (기본 0, 0, 0°) 전송. hanul_webots.sh 첫 기동 시 사용.
-  python3 scripts/amcl_pose_estimate.py 1.0 0.5 [yaw]
+  python3 scripts/rviz_initial_pose.py 1.0 0.5 [yaw]
       → 고정 포즈 (1, 0.5) 또는 (1, 0.5, yaw) 전송.
 """
 import sys
@@ -67,7 +67,7 @@ def main():
         use_amcl_current = False
 
     rclpy.init()
-    node = Node("amcl_pose_estimate")
+    node = Node("rviz_initial_pose")
     pub = node.create_publisher(PoseWithCovarianceStamped, "/" + INITIAL_POSE_TOPIC, 10)
 
     if use_amcl_current:
@@ -101,7 +101,7 @@ def main():
             rclpy.spin_once(node, timeout_sec=0.2)
         if amcl_received[0] is None:
             node.get_logger().error(
-                "No AMCL pose. Ensure loc mode is running and initial pose was set once (e.g. Init Pose panel or amcl_pose_estimate.py). "
+                "No AMCL pose. Ensure loc mode is running and initial pose was set once (e.g. Init Pose panel or rviz_initial_pose.py). "
                 "If AMCL cannot process scans (e.g. lidar_link TF timing), it may not publish; see docs/hanul/04_navigation.md (map->odom identity)."
             )
             node.destroy_node()
