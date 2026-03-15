@@ -1,4 +1,5 @@
 #!/bin/bash
+# NUC에서만 실행. 컨트롤러(다이나믹셀) + 라이다(S2). 제어 PC에서는 hanul_control_pc.sh 실행.
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -8,6 +9,7 @@ DEV_WHEEL=wheel
 DEV_LIDAR=lidar
 MOTOR_PORT="${MOTOR_PORT:-/dev/${DEV_WHEEL}}"
 LIDAR_PORT="${LIDAR_PORT:-/dev/${DEV_LIDAR}}"
+# 다이나믹셀이 USB1(ttyUSB1)에 연결된 경우 udev 미사용 시: MOTOR_PORT=/dev/ttyUSB1 로 실행
 
 if tmux has-session -t "$SESSION" 2>/dev/null; then
   echo "기존 tmux 세션 '$SESSION'에 붙습니다."

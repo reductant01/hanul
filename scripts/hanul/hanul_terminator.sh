@@ -7,18 +7,14 @@ MAP_YAML="${PROJECT_ROOT}/maps/hanul/hanul_map.yaml"
 RVIZ_MAP_CONFIG="${PROJECT_ROOT}/config/hanul/rviz_map.rviz"
 RVIZ_LOC_CONFIG="${PROJECT_ROOT}/config/hanul/rviz_loc.rviz"
 
-INIT_X=0.0
-INIT_Y=0.0
-INIT_YAW=0.0
-INIT_QZ="$(python3 -c "import math; print(math.sin($INIT_YAW / 2.0))")"
-INIT_QW="$(python3 -c "import math; print(math.cos($INIT_YAW / 2.0))")"
-
 CMD_EMPTY="exec bash"
 CMD_WEBOTS="deactivate 2>/dev/null; $SETUP_CMD; export PYTHONPATH=$PROJECT_ROOT; webots $WEBOTS_WORLD; exec bash"
-CMD_TELEOP="$SETUP_CMD; cd $PROJECT_ROOT && PYTHONPATH=$PROJECT_ROOT:\$PYTHONPATH python3 common/cmd_vel_input.py; exec bash"
-CMD_COLLISION_MONITOR="$SETUP_CMD; (ros2 run nav2_collision_monitor collision_monitor --ros-args --params-file $PROJECT_ROOT/config/hanul/nav2_params.yaml &); sleep 3; ros2 lifecycle set /collision_monitor configure 2>/dev/null; ros2 lifecycle set /collision_monitor activate 2>/dev/null; cd $PROJECT_ROOT && PYTHONPATH=$PROJECT_ROOT:\$PYTHONPATH python3 -m common.cmd_vel_output; exec bash"
-CMD_REAL_CONTROLLER="$SETUP_CMD; cd $PROJECT_ROOT/controllers/hanul_controller_nuc && PYTHONPATH=$PROJECT_ROOT:\$PYTHONPATH python3 hanul_controller_nuc.py; exec bash"
-CMD_LIDAR_A1="$SETUP_CMD; echo 'A1 라이다: 아래에 드라이버 명령 실행 (예: ros2 run ... /scan 발행)'; exec bash"
+CMD_VEL_INPUT="$SETUP_CMD; cd $PROJECT_ROOT && PYTHONPATH=$PROJECT_ROOT:\$PYTHONPATH python3 common/cmd_vel_input.py; exec bash"
+CMD_COLLISION_MONITOR="$SETUP_CMD; (ros2 run nav2_collision_monitor collision_monitor --ros-args --params-file $PROJECT_ROOT/config/hanul/nav2_params.yaml >> /tmp/collision_monitor.log 2>&1 &); sleep 3; ros2 lifecycle set /collision_monitor configure 2>/dev/null; ros2 lifecycle set /collision_monitor activate 2>/dev/null; exec bash"
+CMD_VEL_OUTPUT="$SETUP_CMD; cd $PROJECT_ROOT && PYTHONPATH=$PROJECT_ROOT:\$PYTHONPATH python3 -m common.cmd_vel_output; exec bash"
+CMD_RVIZ_MAP="$SETUP_CMD; ros2 run rviz2 rviz2 -d $RVIZ_MAP_CONFIG --ros-args -p use_sim_time:=false; exec bash"
+CMD_RVIZ_LOC="$SETUP_CMD; ros2 run rviz2 rviz2 -d $RVIZ_LOC_CONFIG --ros-args -p use_sim_time:=false; exec bash"
+
 
 write_terminator_config() {
   local CONFIG_FILE="${1:-/tmp/hanul_terminator_config}"
@@ -108,8 +104,8 @@ write_terminator_config() {
       parent = bottom_h2
       order = 1
       profile = default
-      command = "$CMD_TELEOP"
-      title = "Teleop"
+      command = "$CMD_VEL_INPUT"
+      title = "cmd_vel_input"
     [[[terminal_bottom_3]]]
       type = Terminal
       parent = bottom_h3

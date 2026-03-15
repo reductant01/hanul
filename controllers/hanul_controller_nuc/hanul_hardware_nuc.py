@@ -1,6 +1,6 @@
 """
 NUC 실제 로봇 하드웨어 인터페이스 (다이나믹셀 ID 1=오른쪽, 2=뒤, 3=왼쪽)
-Dynamixel Wizard 기준: ttyUSB0, 1000000 bps, Protocol 2.0, Operating Mode = Velocity(1),
+Dynamixel Wizard 기준: ttyUSB1, 1000000 bps, Protocol 2.0, Operating Mode = Velocity(1),
 Velocity Limit = 330 (75.57 rev/min), ID 1/2/3 = 오른쪽/뒤/왼쪽
 """
 import math

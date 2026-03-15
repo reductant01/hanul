@@ -1,13 +1,37 @@
 """
 ROS 2 브릿지 모듈
 """
+import ast
 import math
+import os
+import threading
+
 import rclpy
+import yaml
 from rclpy.node import Node
 from geometry_msgs.msg import Twist, PolygonStamped, Point32
 from sensor_msgs.msg import LaserScan
 from tf2_ros import StaticTransformBroadcaster, TransformBroadcaster
-import threading
+
+
+def _load_collision_polygons_from_nav2_params():
+    project_root = os.environ.get('PROJECT_ROOT') or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    path = os.path.join(project_root, 'config', 'hanul', 'nav2_params.yaml')
+    default_stop = [(0.3, 0.3), (0.3, -0.3), (0, -0.3), (0, 0.3)]
+    default_slowdown = [(0.6, 0.6), (0.6, -0.6), (-0.6, -0.6), (-0.6, 0.6)]
+    if not os.path.isfile(path):
+        return default_stop, default_slowdown
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            data = yaml.safe_load(f)
+        params = (data or {}).get('collision_monitor', {}).get('ros__parameters') or {}
+        stop_raw = params.get('PolygonStop', {}).get('points')
+        slow_raw = params.get('PolygonSlow', {}).get('points')
+        stop = [tuple(p) for p in ast.literal_eval(stop_raw)] if isinstance(stop_raw, str) else default_stop
+        slow = [tuple(p) for p in ast.literal_eval(slow_raw)] if isinstance(slow_raw, str) else default_slowdown
+        return stop if len(stop) >= 3 else default_stop, slow if len(slow) >= 3 else default_slowdown
+    except Exception:
+        return default_stop, default_slowdown
 
 
 def _make_polygon_stamped(frame_id, stamp, points_xy):
@@ -45,11 +69,8 @@ class RobotROSBridge(Node):
 
         n = 24
         r_approach = 0.17
-        half_stop = 0.3
-        half_slowdown = 0.6
         self._approach_points = [(r_approach * math.cos(2 * math.pi * i / n), r_approach * math.sin(2 * math.pi * i / n)) for i in range(n)]
-        self._stop_points = [(half_stop, half_stop), (half_stop, -half_stop), (-half_stop, -half_stop), (-half_stop, half_stop)]
-        self._slowdown_points = [(half_slowdown, half_slowdown), (half_slowdown, -half_slowdown), (-half_slowdown, -half_slowdown), (-half_slowdown, half_slowdown)]
+        self._stop_points, self._slowdown_points = _load_collision_polygons_from_nav2_params()
 
     def cmd_vel_callback(self, msg):
         vx = -msg.linear.x

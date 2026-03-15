@@ -78,7 +78,14 @@ def key_to_binding_key(key, shift_pressed, caps_lock=False):
             return '<' if shift_pressed else ','
         if vk in (46, 62):
             return '>' if shift_pressed else '.'
-        return VK_TO_CHAR.get(vk)
+        if vk in VK_TO_CHAR:
+            return VK_TO_CHAR[vk]
+        if 97 <= vk <= 122:
+            c = chr(vk)
+            return c.upper() if (shift_pressed or caps_lock) else c
+        if 65 <= vk <= 90:
+            c = chr(vk)
+            return c if (shift_pressed or caps_lock) else c.lower()
     return None
 
 
