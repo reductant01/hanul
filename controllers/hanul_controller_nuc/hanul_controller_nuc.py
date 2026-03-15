@@ -5,7 +5,9 @@ import rclpy
 
 from hanul_hardware_nuc import HanulHardware
 from common.omni_odometry import OmniOdometry
-from common.tf_converter import TFConverter
+from common.tf_odom_base import create_odometry_transform
+from common.tf_base_lidar import TFBaseLidar
+from common.tf_lidar_scan import TFLidarScan
 from common.tf_map_odom import should_publish_map_odom_identity, create_map_odom_identity
 from common.ros_bridge import RobotROSBridge, init_ros_node, shutdown_ros_node
 
@@ -24,13 +26,14 @@ def main():
     print("Real robot hardware (ID L=%s R=%s B=%s) initialized" % (robot.motor_id_left, robot.motor_id_right, robot.motor_id_back))
 
     odometry = OmniOdometry()
-    tf_converter = TFConverter()
+    tf_base_lidar = TFBaseLidar()
+    tf_lidar_scan = TFLidarScan()
     init_ros_node()
     ros_bridge = RobotROSBridge('hanul_controller_node')
     stamp = ros_bridge.get_clock().now().to_msg()
-    ros_bridge.publish_transform(tf_converter.create_odometry_transform(INIT_X, INIT_Y, INIT_YAW, ros_bridge, stamp=stamp))
-    ros_bridge.publish_transform(tf_converter.create_lidar_transform(ros_bridge, stamp=stamp))
-    ros_bridge.publish_transform(tf_converter.create_laser_transform(ros_bridge, stamp=stamp))
+    ros_bridge.publish_transform(create_odometry_transform(INIT_X, INIT_Y, INIT_YAW, ros_bridge, stamp=stamp))
+    ros_bridge.publish_transform(tf_base_lidar.create_lidar_transform(ros_bridge, stamp=stamp))
+    ros_bridge.publish_transform(tf_base_lidar.create_laser_transform(ros_bridge, stamp=stamp))
     print("Hanul NUC Controller ready\n")
 
     print("Starting main loop. Waiting for /cmd_vel...\n")
@@ -50,20 +53,15 @@ def main():
             y_glob = y + INIT_Y
             theta_glob = theta + INIT_YAW
             stamp = ros_bridge.get_clock().now().to_msg()
-            t_odom = tf_converter.create_odometry_transform(
-                x_glob, y_glob, theta_glob, ros_bridge, stamp=stamp
-            )
-            ros_bridge.publish_transform(t_odom)
-            t_lidar = tf_converter.create_lidar_transform(ros_bridge, stamp=stamp)
-            t_laser = tf_converter.create_laser_transform(ros_bridge, stamp=stamp)
-            ros_bridge.publish_transform(t_lidar)
-            ros_bridge.publish_transform(t_laser)
+            ros_bridge.publish_transform(create_odometry_transform(x_glob, y_glob, theta_glob, ros_bridge, stamp=stamp))
+            ros_bridge.publish_transform(tf_base_lidar.create_lidar_transform(ros_bridge, stamp=stamp))
+            ros_bridge.publish_transform(tf_base_lidar.create_laser_transform(ros_bridge, stamp=stamp))
             ros_bridge.publish_collision_polygons_rviz(stamp=stamp)
             if step_count % steps_per_scan_and_identity == 0:
                 if should_publish_map_odom_identity(x_glob, y_glob, theta_glob):
                     ros_bridge.publish_transform(create_map_odom_identity(ros_bridge, stamp=stamp))
                 lidar_data = robot.get_lidar_data()
-                scan_msg = tf_converter.create_laser_scan_msg(
+                scan_msg = tf_lidar_scan.create_laser_scan_msg(
                     lidar_data['ranges'],
                     lidar_data['fov'],
                     lidar_data['min_range'],

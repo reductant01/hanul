@@ -18,7 +18,7 @@
 
 **이유:** odom TF와 스캔 메시지의 stamp가 달라서 TF 캐시에 맞는 변환이 없음.
 
-**수정:** controller·tf_converter에서 odom TF와 스캔에 **동일 stamp**를 사용하도록 같은 시각 사용.
+**수정:** controller·tf_odom_base/tf_lidar_scan에서 odom TF와 스캔에 **동일 stamp**를 사용하도록 같은 시각 사용.
 
 ---
 

@@ -8,7 +8,7 @@
 
 **이유:** costmap·스캔은 map→odom→base_footprint→lidar_link TF가 필요한데, map→odom은 AMCL이 스캔 처리 **뒤**에만 발행돼서 그 시점에는 TF가 없음.
 
-**수정:** 스캔과 같은 stamp로 **map→odom identity**를 컨트롤러에서 보조 발행. (`common/tf_map_odom.py`)
+**수정:** 스캔과 같은 stamp로 **map→odom identity**를 컨트롤러에서 보조 발행. (`common/ros_bridge.py` `publish_map_odom_identity_if_near_origin`)
 
 ---
 
@@ -91,7 +91,7 @@
   **사용처:** Nav2 **controller_server**가 이 경로를 따라 cmd_vel을 만듦. RViz는 `/plan`을 구독해 “계획된 경로”를 녹색 선으로 표시함.
 
 - **TF**  
-  **발행:** map→odom은 **AMCL**, odom→base_footprint 등은 우리 **컨트롤러**(tf_converter), map→odom 보조는 **tf_map_odom**, lidar_link 등도 컨트롤러.  
+  **발행:** map→odom은 **AMCL**, odom→base_footprint 등은 우리 **컨트롤러**(tf_odom_base/tf_base_lidar/tf_lidar_scan), map→odom 보조는 **tf_map_odom**+ros_bridge, lidar_link 등도 컨트롤러.  
   **사용처:** 모든 노드가 좌표 변환할 때 사용. RViz는 TF를 구독해 축/프레임을 화면에 그림.
 
 - **Grid**  

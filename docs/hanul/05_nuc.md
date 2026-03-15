@@ -88,7 +88,7 @@
 
 **이유:** Webots 쪽 스캔 배열 순서, odom yaw, cmd_vel 부호가 NUC/실제 로봇과 다르게 구현됨.
 
-**수정:** NUC와 동일하게 보이도록 Webots 쪽만 수정. (1) **스캔 배열 순서:** `controllers/hanul_controller_webots/hanul_controller_webots.py`에서 라이다 데이터를 `lidar_data['ranges'][::-1]`로 역순하여 LaserScan에 넣음. (2) **odom yaw:** `common/tf_converter.py`의 `create_odometry_transform`에 `yaw_offset` 인자 추가, Webots에서 필요 시 호출 시 `yaw_offset`으로 방향 보정. (3) **vy·vx·w 부호:** Webots에서만 `robot.set_cmd_vel(-vx, -vy, -w)`로 전달해 실제 로봇과 같은 방향으로 구동되도록 함.
+**수정:** NUC와 동일하게 보이도록 Webots 쪽만 수정. (1) **스캔 배열 순서:** `controllers/hanul_controller_webots/hanul_controller_webots.py`에서 라이다 데이터를 `lidar_data['ranges'][::-1]`로 역순하여 LaserScan에 넣음. (2) **odom yaw:** `common/tf_odom_base.py`의 `create_odometry_transform`에 `yaw_offset` 인자 추가, Webots에서 필요 시 호출 시 `yaw_offset`으로 방향 보정. (3) **vy·vx·w 부호:** Webots에서만 `robot.set_cmd_vel(-vx, -vy, -w)`로 전달해 실제 로봇과 같은 방향으로 구동되도록 함.
 
 ---
 

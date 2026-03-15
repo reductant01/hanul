@@ -5,6 +5,7 @@
 import math
 from common.omni_inverse_kinematics import OmniKinematics
 
+
 BOOST_THRESHOLD = 0.08
 BOOST_SCALE = 15
 
