@@ -244,7 +244,7 @@ collision_monitor:
     #   polygon_pub_topic: "polygon_approach"
     PolygonStop:
       type: "polygon"
-      points: "[[0.3, 0.3], [0.3, -0.3], [0, -0.3], [0, 0.3]]"
+      points: "[[-0.3, 0.3], [-0.3, -0.3], [0, -0.3], [0, 0.3]]"
       action_type: "stop"
       min_points: 4
       visualize: True

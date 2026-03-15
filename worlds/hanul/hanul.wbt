@@ -43,7 +43,7 @@ Robot {
   children [
     Lidar {
       translation 0.085 0 0.113
-      rotation 0 0 1 0
+      rotation 0 0 1 3.14159265359
       name "lidar s2"
       horizontalResolution 3200
       fieldOfView 6.28318

@@ -108,6 +108,7 @@ class CmdVelInputNode(Node):
                 self._turn *= t[1]
 
     def _on_press(self, key):
+        print(f"[key] char={getattr(key,'char',None)} vk={getattr(key,'vk',None)}", flush=True)
         caps = _caps_lock_on()
         try:
             binding_key = key_to_binding_key(key, self._shift, caps)
