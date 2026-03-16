@@ -95,12 +95,29 @@ class HanulHardware:
         if not _DXL_AVAILABLE or self._packet_handler is None or self._port_handler is None:
             return (self._pos_L, self._pos_R, self._pos_B)
         try:
-            raw_L = self._packet_handler.read4ByteTxRx(self._port_handler, self.motor_id_left, ADDR_PRESENT_POSITION)[0]
-            raw_R = self._packet_handler.read4ByteTxRx(self._port_handler, self.motor_id_right, ADDR_PRESENT_POSITION)[0]
-            raw_B = self._packet_handler.read4ByteTxRx(self._port_handler, self.motor_id_back, ADDR_PRESENT_POSITION)[0]
-            self._pos_L = raw_L * (2.0 * math.pi / DXL_POSITION_MAX)
-            self._pos_R = raw_R * (2.0 * math.pi / DXL_POSITION_MAX)
-            self._pos_B = raw_B * (2.0 * math.pi / DXL_POSITION_MAX)
+            ret_L = self._packet_handler.read4ByteTxRx(self._port_handler, self.motor_id_left, ADDR_PRESENT_POSITION)
+            raw_L = ret_L[0] if isinstance(ret_L, (list, tuple)) else ret_L
+            res_L = ret_L[1] if isinstance(ret_L, (list, tuple)) and len(ret_L) > 1 else 0
+            if res_L == 0:
+                if raw_L > 2147483647:
+                    raw_L -= 4294967296
+                self._pos_L = raw_L * (2.0 * math.pi / DXL_POSITION_MAX)
+
+            ret_R = self._packet_handler.read4ByteTxRx(self._port_handler, self.motor_id_right, ADDR_PRESENT_POSITION)
+            raw_R = ret_R[0] if isinstance(ret_R, (list, tuple)) else ret_R
+            res_R = ret_R[1] if isinstance(ret_R, (list, tuple)) and len(ret_R) > 1 else 0
+            if res_R == 0:
+                if raw_R > 2147483647:
+                    raw_R -= 4294967296
+                self._pos_R = raw_R * (2.0 * math.pi / DXL_POSITION_MAX)
+
+            ret_B = self._packet_handler.read4ByteTxRx(self._port_handler, self.motor_id_back, ADDR_PRESENT_POSITION)
+            raw_B = ret_B[0] if isinstance(ret_B, (list, tuple)) else ret_B
+            res_B = ret_B[1] if isinstance(ret_B, (list, tuple)) and len(ret_B) > 1 else 0
+            if res_B == 0:
+                if raw_B > 2147483647:
+                    raw_B -= 4294967296
+                self._pos_B = raw_B * (2.0 * math.pi / DXL_POSITION_MAX)
         except Exception:
             pass
         return (self._pos_L, self._pos_R, self._pos_B)

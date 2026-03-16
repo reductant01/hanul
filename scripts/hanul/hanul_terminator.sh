@@ -32,6 +32,7 @@ write_terminator_config() {
     [[[window0]]]
       type = Window
       parent = ""
+      size = 1440, 1080
     [[[root_split]]]
       type = VPaned
       parent = window0

@@ -7,7 +7,7 @@ import math
 class OmniOdometry:
     """3휠 옴니휠 로봇 오도메트리"""
 
-    def __init__(self, wheel_radius=0.05, wheelbase=0.1328, odom_scale_x=1.0, odom_scale_y=1.0):
+    def __init__(self, wheel_radius=0.05, wheelbase=0.150, odom_scale_x=1.0, odom_scale_y=1.0):
         self.R = wheel_radius
         self.L = wheelbase
         self.odom_scale_x = odom_scale_x
