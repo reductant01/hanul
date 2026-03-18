@@ -15,14 +15,9 @@ INIT_X = 0.0
 INIT_Y = 0.0
 INIT_YAW = 0.0
 
-MOTOR_ID_LEFT = 3
-MOTOR_ID_RIGHT = 1
-MOTOR_ID_BACK = 2
-
-
 def main():
     print("Hanul NUC Controller initializing...")
-    robot = HanulHardware(motor_id_left=MOTOR_ID_LEFT, motor_id_right=MOTOR_ID_RIGHT, motor_id_back=MOTOR_ID_BACK)
+    robot = HanulHardware()
     print("Real robot hardware (ID L=%s R=%s B=%s) initialized" % (robot.motor_id_left, robot.motor_id_right, robot.motor_id_back))
 
     odometry = OmniOdometry()

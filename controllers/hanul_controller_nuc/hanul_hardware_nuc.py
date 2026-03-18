@@ -29,6 +29,10 @@ DXL_VELOCITY_LIMIT = 330
 RAD_PER_SEC_TO_RPM = 60.0 / (2.0 * 3.14159265359)
 TICK_TO_RAD = (2.0 * math.pi) / DXL_TICKS_PER_REV
 
+DEFAULT_MOTOR_ID_LEFT = 3
+DEFAULT_MOTOR_ID_RIGHT = 1
+DEFAULT_MOTOR_ID_BACK = 2
+
 # 수식에서 정의한 바퀴 양의 회전 방향과 실제 다이나믹셀 부호 차이를 보정.
 # 현재 하드웨어는 수식 기준과 부호가 반대여서 세 바퀴 모두 -1로 맞춘다.
 WHEEL_COMMAND_SIGN_LEFT = -1.0
@@ -55,11 +59,17 @@ def _to_signed_32bit(raw_value):
 class HanulHardware:
     """실제 한울 로봇: 다이나믹셀 모터(ID 1=오른쪽, 2=뒤, 3=왼쪽)로 옴니휠 제어"""
 
-    def __init__(self, motor_id_left=3, motor_id_right=1, motor_id_back=2, max_speed=6.0, control_hz=50.0,
+    def __init__(self, motor_id_left=None, motor_id_right=None, motor_id_back=None, max_speed=6.0, control_hz=50.0,
                  port=None, baudrate=BAUDRATE):
-        self.motor_id_left = motor_id_left
-        self.motor_id_right = motor_id_right
-        self.motor_id_back = motor_id_back
+        self.motor_id_left = (
+            motor_id_left if motor_id_left is not None else int(os.environ.get("MOTOR_ID_LEFT", DEFAULT_MOTOR_ID_LEFT))
+        )
+        self.motor_id_right = (
+            motor_id_right if motor_id_right is not None else int(os.environ.get("MOTOR_ID_RIGHT", DEFAULT_MOTOR_ID_RIGHT))
+        )
+        self.motor_id_back = (
+            motor_id_back if motor_id_back is not None else int(os.environ.get("MOTOR_ID_BACK", DEFAULT_MOTOR_ID_BACK))
+        )
         self.control_hz = control_hz
         self.velocity_controller = OmniVelocityController(max_speed=max_speed, acceleration_factor=0.1)
         self._pos_L = 0.0

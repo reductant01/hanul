@@ -5,15 +5,29 @@ import math
 
 MAX_WHEEL_DELTA_METERS = 0.25
 
+# 실제 로봇과 odom의 평행이동 방향이 다를 때 여기서만 보정한다.
+# yaw(theta) 방향은 별도로 맞고 있다고 가정한다.
+ODOM_SCALE_X = -1.0
+ODOM_SCALE_Y = -1.0
+ODOM_SCALE_THETA = 1.0
+
 
 class OmniOdometry:
     """3휠 옴니휠 로봇 오도메트리"""
 
-    def __init__(self, wheel_radius=0.05, wheelbase=0.150, odom_scale_x=1.0, odom_scale_y=1.0):
+    def __init__(
+        self,
+        wheel_radius=0.05,
+        wheelbase=0.150,
+        odom_scale_x=ODOM_SCALE_X,
+        odom_scale_y=ODOM_SCALE_Y,
+        odom_scale_theta=ODOM_SCALE_THETA,
+    ):
         self.R = wheel_radius
         self.L = wheelbase
         self.odom_scale_x = odom_scale_x
         self.odom_scale_y = odom_scale_y
+        self.odom_scale_theta = odom_scale_theta
         self.x = 0.0
         self.y = 0.0
         self.theta = 0.0
@@ -69,7 +83,8 @@ class OmniOdometry:
         delta_x = (delta_R - delta_L) / 1.73205
         raw_delta_y = (2.0 * delta_B - delta_L - delta_R) / 3.0
         delta_y = -raw_delta_y
-        delta_theta = (delta_L + delta_R + delta_B) / (3.0 * self.L)
+        raw_delta_theta = (delta_L + delta_R + delta_B) / (3.0 * self.L)
+        delta_theta = self.odom_scale_theta * raw_delta_theta
 
         avg_theta = self.theta + (delta_theta / 2.0)
         dx_world = delta_x * math.cos(avg_theta) - delta_y * math.sin(avg_theta)
