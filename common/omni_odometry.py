@@ -3,6 +3,8 @@
 """
 import math
 
+MAX_WHEEL_DELTA_METERS = 0.25
+
 
 class OmniOdometry:
     """3휠 옴니휠 로봇 오도메트리"""
@@ -27,9 +29,30 @@ class OmniOdometry:
             self.last_pos_R = pos_R
             self.last_pos_B = pos_B
             return 0.0, 0.0, 0.0
-        delta_L = (pos_L - self.last_pos_L) * self.R
-        delta_R = (pos_R - self.last_pos_R) * self.R
-        delta_B = (pos_B - self.last_pos_B) * self.R
+
+        d_theta_L = pos_L - self.last_pos_L
+        d_theta_R = pos_R - self.last_pos_R
+        d_theta_B = pos_B - self.last_pos_B
+
+        # Fold encoder deltas into the shortest angular path so wrap-around
+        # at the 0/2pi boundary does not teleport odometry.
+        d_theta_L = math.atan2(math.sin(d_theta_L), math.cos(d_theta_L))
+        d_theta_R = math.atan2(math.sin(d_theta_R), math.cos(d_theta_R))
+        d_theta_B = math.atan2(math.sin(d_theta_B), math.cos(d_theta_B))
+
+        delta_L = d_theta_L * self.R
+        delta_R = d_theta_R * self.R
+        delta_B = d_theta_B * self.R
+
+        if (
+            abs(delta_L) > MAX_WHEEL_DELTA_METERS
+            or abs(delta_R) > MAX_WHEEL_DELTA_METERS
+            or abs(delta_B) > MAX_WHEEL_DELTA_METERS
+        ):
+            self.last_pos_L = pos_L
+            self.last_pos_R = pos_R
+            self.last_pos_B = pos_B
+            return 0.0, 0.0, 0.0
 
         NOISE_THRESHOLD = 0.0001
         if abs(delta_L) < NOISE_THRESHOLD:

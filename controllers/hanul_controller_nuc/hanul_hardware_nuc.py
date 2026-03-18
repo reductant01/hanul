@@ -20,17 +20,26 @@ ADDR_TORQUE_ENABLE = 64
 ADDR_OPERATING_MODE = 11
 ADDR_GOAL_VELOCITY = 104
 ADDR_PRESENT_POSITION = 132
-DXL_POSITION_MAX = 4095
+DXL_TICKS_PER_REV = 4096
+DYNAMIXEL_SIGNED_32BIT_MAX = 2147483647
+DYNAMIXEL_UNSIGNED_32BIT_RANGE = 4294967296
 OPERATING_MODE_VELOCITY = 1
 VELOCITY_UNIT_RPM = 0.229
 DXL_VELOCITY_LIMIT = 330
 RAD_PER_SEC_TO_RPM = 60.0 / (2.0 * 3.14159265359)
+TICK_TO_RAD = (2.0 * math.pi) / DXL_TICKS_PER_REV
 
 
 def _rad_per_sec_to_dxl(rad_s):
     rpm = rad_s * RAD_PER_SEC_TO_RPM
     val = int(rpm / VELOCITY_UNIT_RPM)
     return max(-DXL_VELOCITY_LIMIT, min(DXL_VELOCITY_LIMIT, val))
+
+
+def _to_signed_32bit(raw_value):
+    if raw_value > DYNAMIXEL_SIGNED_32BIT_MAX:
+        return raw_value - DYNAMIXEL_UNSIGNED_32BIT_RANGE
+    return raw_value
 
 
 class HanulHardware:
@@ -99,25 +108,19 @@ class HanulHardware:
             raw_L = ret_L[0] if isinstance(ret_L, (list, tuple)) else ret_L
             res_L = ret_L[1] if isinstance(ret_L, (list, tuple)) and len(ret_L) > 1 else 0
             if res_L == 0:
-                if raw_L > 2147483647:
-                    raw_L -= 4294967296
-                self._pos_L = raw_L * (2.0 * math.pi / DXL_POSITION_MAX)
+                self._pos_L = _to_signed_32bit(raw_L) * TICK_TO_RAD
 
             ret_R = self._packet_handler.read4ByteTxRx(self._port_handler, self.motor_id_right, ADDR_PRESENT_POSITION)
             raw_R = ret_R[0] if isinstance(ret_R, (list, tuple)) else ret_R
             res_R = ret_R[1] if isinstance(ret_R, (list, tuple)) and len(ret_R) > 1 else 0
             if res_R == 0:
-                if raw_R > 2147483647:
-                    raw_R -= 4294967296
-                self._pos_R = raw_R * (2.0 * math.pi / DXL_POSITION_MAX)
+                self._pos_R = _to_signed_32bit(raw_R) * TICK_TO_RAD
 
             ret_B = self._packet_handler.read4ByteTxRx(self._port_handler, self.motor_id_back, ADDR_PRESENT_POSITION)
             raw_B = ret_B[0] if isinstance(ret_B, (list, tuple)) else ret_B
             res_B = ret_B[1] if isinstance(ret_B, (list, tuple)) and len(ret_B) > 1 else 0
             if res_B == 0:
-                if raw_B > 2147483647:
-                    raw_B -= 4294967296
-                self._pos_B = raw_B * (2.0 * math.pi / DXL_POSITION_MAX)
+                self._pos_B = _to_signed_32bit(raw_B) * TICK_TO_RAD
         except Exception:
             pass
         return (self._pos_L, self._pos_R, self._pos_B)
