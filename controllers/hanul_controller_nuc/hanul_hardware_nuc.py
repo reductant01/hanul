@@ -29,6 +29,16 @@ DXL_VELOCITY_LIMIT = 330
 RAD_PER_SEC_TO_RPM = 60.0 / (2.0 * 3.14159265359)
 TICK_TO_RAD = (2.0 * math.pi) / DXL_TICKS_PER_REV
 
+# 수식에서 정의한 바퀴 양의 회전 방향과 실제 다이나믹셀 부호 차이를 보정.
+# 현재 하드웨어는 수식 기준과 부호가 반대여서 세 바퀴 모두 -1로 맞춘다.
+WHEEL_COMMAND_SIGN_LEFT = -1.0
+WHEEL_COMMAND_SIGN_RIGHT = -1.0
+WHEEL_COMMAND_SIGN_BACK = -1.0
+
+WHEEL_ENCODER_SIGN_LEFT = -1.0
+WHEEL_ENCODER_SIGN_RIGHT = -1.0
+WHEEL_ENCODER_SIGN_BACK = -1.0
+
 
 def _rad_per_sec_to_dxl(rad_s):
     rpm = rad_s * RAD_PER_SEC_TO_RPM
@@ -93,9 +103,9 @@ class HanulHardware:
     def _send_motor_velocity(self, vel_L, vel_R, vel_B):
         if not _DXL_AVAILABLE or self._packet_handler is None or self._port_handler is None:
             return
-        dxl_L = _rad_per_sec_to_dxl(vel_L)
-        dxl_R = _rad_per_sec_to_dxl(vel_R)
-        dxl_B = _rad_per_sec_to_dxl(vel_B)
+        dxl_L = _rad_per_sec_to_dxl(WHEEL_COMMAND_SIGN_LEFT * vel_L)
+        dxl_R = _rad_per_sec_to_dxl(WHEEL_COMMAND_SIGN_RIGHT * vel_R)
+        dxl_B = _rad_per_sec_to_dxl(WHEEL_COMMAND_SIGN_BACK * vel_B)
         self._packet_handler.write4ByteTxRx(self._port_handler, self.motor_id_left, ADDR_GOAL_VELOCITY, dxl_L)
         self._packet_handler.write4ByteTxRx(self._port_handler, self.motor_id_right, ADDR_GOAL_VELOCITY, dxl_R)
         self._packet_handler.write4ByteTxRx(self._port_handler, self.motor_id_back, ADDR_GOAL_VELOCITY, dxl_B)
@@ -108,19 +118,19 @@ class HanulHardware:
             raw_L = ret_L[0] if isinstance(ret_L, (list, tuple)) else ret_L
             res_L = ret_L[1] if isinstance(ret_L, (list, tuple)) and len(ret_L) > 1 else 0
             if res_L == 0:
-                self._pos_L = _to_signed_32bit(raw_L) * TICK_TO_RAD
+                self._pos_L = WHEEL_ENCODER_SIGN_LEFT * _to_signed_32bit(raw_L) * TICK_TO_RAD
 
             ret_R = self._packet_handler.read4ByteTxRx(self._port_handler, self.motor_id_right, ADDR_PRESENT_POSITION)
             raw_R = ret_R[0] if isinstance(ret_R, (list, tuple)) else ret_R
             res_R = ret_R[1] if isinstance(ret_R, (list, tuple)) and len(ret_R) > 1 else 0
             if res_R == 0:
-                self._pos_R = _to_signed_32bit(raw_R) * TICK_TO_RAD
+                self._pos_R = WHEEL_ENCODER_SIGN_RIGHT * _to_signed_32bit(raw_R) * TICK_TO_RAD
 
             ret_B = self._packet_handler.read4ByteTxRx(self._port_handler, self.motor_id_back, ADDR_PRESENT_POSITION)
             raw_B = ret_B[0] if isinstance(ret_B, (list, tuple)) else ret_B
             res_B = ret_B[1] if isinstance(ret_B, (list, tuple)) and len(ret_B) > 1 else 0
             if res_B == 0:
-                self._pos_B = _to_signed_32bit(raw_B) * TICK_TO_RAD
+                self._pos_B = WHEEL_ENCODER_SIGN_BACK * _to_signed_32bit(raw_B) * TICK_TO_RAD
         except Exception:
             pass
         return (self._pos_L, self._pos_R, self._pos_B)
