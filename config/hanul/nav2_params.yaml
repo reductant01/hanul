@@ -133,8 +133,8 @@ local_costmap:
           clearing: True
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 3.0
-        inflation_radius: 0.55
+        cost_scaling_factor: 4.5
+        inflation_radius: 0.35
 
 # [Nav2 터미널 - 전역 장애물 맵] 맵 전체, planner가 경로 계획할 때 사용 (정적 맵 + 라이다)
 # --- 수정한 변수 역할 ---
@@ -165,8 +165,8 @@ global_costmap:
         map_subscribe_transient_local: True
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 3.0
-        inflation_radius: 0.55
+        cost_scaling_factor: 4.5
+        inflation_radius: 0.35
 
 # [Nav2 터미널 - 경로 계획] 목표까지 경로 생성 (global_costmap 기반)
 planner_server:
