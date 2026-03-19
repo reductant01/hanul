@@ -1,17 +1,8 @@
-scan_to_scan_filter_chain:
+lidar_scan_mask:
   ros__parameters:
-    rear_mask:
-      name: rear_mask
-      type: laser_filters/LaserScanAngularBoundsFilter
-      params:
-        # 정면 0도를 기준으로 앞쪽 240도(-120deg ~ +120deg)만 남긴다.
-        # 즉 뒤쪽 120도(+120deg ~ +180deg, -180deg ~ -120deg)는 /scan에서 제외한다.
-        #
-        # rad 변환식:
-        #   degree * pi / 180
-        # 예) 120deg = 120 * pi / 180 = 2 * pi / 3 = 2.0943951023931953 rad
-        # 따라서 아래 값은:
-        #   lower_angle = -120deg = -2 * pi / 3
-        #   upper_angle = +120deg = +2 * pi / 3
-        lower_angle: -2.0943951023931953
-        upper_angle: 2.0943951023931953
+    input_topic: /scan_raw
+    output_topic: /scan
+    # 정면 0도를 기준으로 앞쪽 -120deg ~ +120deg 만 남긴다.
+    # 즉 뒤쪽 120도(+120deg ~ +180deg, -180deg ~ -120deg)는 /scan에서 제외한다.
+    keep_lower_angle_deg: -120.0
+    keep_upper_angle_deg: 120.0
