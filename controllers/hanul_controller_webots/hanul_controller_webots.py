@@ -16,6 +16,7 @@ import rclpy
 
 from hanul_hardware_webots import HanulWebots
 from common.omni_odometry import OmniOdometry
+from common.odom_message import create_odometry_message
 from common.tf_odom_base import create_odometry_transform
 from common.tf_base_lidar import TFBaseLidar
 from common.tf_lidar_scan import TFLidarScan
@@ -42,6 +43,7 @@ def main():
     ros_bridge = RobotROSBridge('hanul_controller_node')
     stamp = ros_bridge.get_clock().now().to_msg()
     ros_bridge.publish_transform(create_odometry_transform(INIT_X, INIT_Y, INIT_YAW, ros_bridge, stamp=stamp, yaw_offset=YAW_OFFSET))
+    ros_bridge.publish_odom(create_odometry_message(INIT_X, INIT_Y, INIT_YAW, ros_bridge, stamp=stamp))
     ros_bridge.publish_transform(tf_base_lidar.create_lidar_transform(ros_bridge, stamp=stamp, lidar_yaw=LIDAR_YAW))
     print("Hanul Webots Controller ready\n")
 
@@ -49,6 +51,7 @@ def main():
     step_count = 0
     log_interval = 1000
     steps_per_scan_and_identity = 8
+    last_stamp_ns = None
 
     try:
         while rclpy.ok() and robot.step() != -1:
@@ -57,12 +60,30 @@ def main():
             vx, vy, w = ros_bridge.get_cmd_vel()
             robot.set_cmd_vel(-vx, -vy, -w)
             pos_L, pos_R, pos_B = robot.get_encoder_values()
-            odometry.update(pos_L, pos_R, pos_B)
+            delta_x, delta_y, delta_theta = odometry.update(pos_L, pos_R, pos_B)
             x, y, theta = odometry.get_pose()
             x_glob = x + INIT_X
             y_glob = y + INIT_Y
             theta_glob = theta + INIT_YAW
+            stamp_ns = ros_bridge.get_clock().now().nanoseconds
+            dt = 0.0 if last_stamp_ns is None else max((stamp_ns - last_stamp_ns) / 1e9, 1e-6)
+            last_stamp_ns = stamp_ns
+            odom_vx = 0.0 if dt == 0.0 else (delta_x / dt)
+            odom_vy = 0.0 if dt == 0.0 else (delta_y / dt)
+            odom_wz = 0.0 if dt == 0.0 else (delta_theta / dt)
             ros_bridge.publish_transform(create_odometry_transform(x_glob, y_glob, theta_glob, ros_bridge, stamp=stamp, yaw_offset=YAW_OFFSET))
+            ros_bridge.publish_odom(
+                create_odometry_message(
+                    x_glob,
+                    y_glob,
+                    theta_glob,
+                    ros_bridge,
+                    stamp=stamp,
+                    linear_x=odom_vx,
+                    linear_y=odom_vy,
+                    angular_z=odom_wz,
+                )
+            )
             ros_bridge.publish_transform(tf_base_lidar.create_lidar_transform(ros_bridge, stamp=stamp, lidar_yaw=LIDAR_YAW))
             ros_bridge.publish_collision_polygons_rviz(stamp=stamp)
             if step_count % steps_per_scan_and_identity == 0:

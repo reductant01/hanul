@@ -6,6 +6,7 @@ import threading
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist, PolygonStamped
+from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
 from tf2_ros import StaticTransformBroadcaster, TransformBroadcaster
 
@@ -26,6 +27,7 @@ class RobotROSBridge(Node):
         self.create_subscription(Twist, '/cmd_vel', self._on_cmd_vel_received, 10)
         self.cmd_vel_to_robot_pub = self.create_publisher(Twist, '/cmd_vel_to_robot', 10)
         self.scan_publisher = self.create_publisher(LaserScan, '/scan', 10)
+        self.odom_publisher = self.create_publisher(Odometry, '/odom', 10)
         self.tf_broadcaster = TransformBroadcaster(self)
         self.static_tf_broadcaster = StaticTransformBroadcaster(self)
         self.polygon_approach_pub = self.create_publisher(PolygonStamped, '/polygon_approach', 10)
@@ -52,6 +54,10 @@ class RobotROSBridge(Node):
             with self._scan_lock:
                 self._last_scan = scan_msg
             self.scan_publisher.publish(scan_msg)
+
+    def publish_odom(self, odom_msg):
+        if odom_msg:
+            self.odom_publisher.publish(odom_msg)
 
     def publish_transform(self, transform_msg):
         if transform_msg:
