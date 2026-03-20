@@ -32,7 +32,7 @@ except ImportError:
     print("dynamixel_sdk를 찾지 못했습니다. 현재 NUC/가상환경에서 설치 상태를 확인해주세요.", file=sys.stderr)
     sys.exit(1)
 
-from controllers.hanul_controller_nuc.hanul_hardware_nuc import (
+from controllers.hanul_controller.hanul_hardware import (
     ADDR_PRESENT_POSITION,
     BAUDRATE,
     PROTOCOL_VERSION,

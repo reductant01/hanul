@@ -1,0 +1,8 @@
+lidar_scan_mask:
+  ros__parameters:
+    input_topic: /scan_raw
+    output_topic: /scan
+    # Webots에서는 현재 /scan_raw 각도 기준이 실로봇과 반대라서
+    # 뒤쪽 120deg를 제거하려면 180deg 부근을 마스킹해야 한다.
+    mask_lower_angle_deg: 120.0
+    mask_upper_angle_deg: -120.0

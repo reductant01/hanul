@@ -7,7 +7,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist, PolygonStamped
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import LaserScan
+from sensor_msgs.msg import JointState, LaserScan
 from tf2_ros import StaticTransformBroadcaster, TransformBroadcaster
 
 from common.collision_polygons import (
@@ -26,8 +26,10 @@ class RobotROSBridge(Node):
 
         self.create_subscription(Twist, '/cmd_vel', self._on_cmd_vel_received, 10)
         self.cmd_vel_to_robot_pub = self.create_publisher(Twist, '/cmd_vel_to_robot', 10)
+        self.scan_raw_publisher = self.create_publisher(LaserScan, '/scan_raw', 10)
         self.scan_publisher = self.create_publisher(LaserScan, '/scan', 10)
         self.odom_publisher = self.create_publisher(Odometry, '/odom', 10)
+        self.joint_state_publisher = self.create_publisher(JointState, '/joint_states', 10)
         self.tf_broadcaster = TransformBroadcaster(self)
         self.static_tf_broadcaster = StaticTransformBroadcaster(self)
         self.polygon_approach_pub = self.create_publisher(PolygonStamped, '/polygon_approach', 10)
@@ -55,9 +57,17 @@ class RobotROSBridge(Node):
                 self._last_scan = scan_msg
             self.scan_publisher.publish(scan_msg)
 
+    def publish_scan_raw(self, scan_msg):
+        if scan_msg:
+            self.scan_raw_publisher.publish(scan_msg)
+
     def publish_odom(self, odom_msg):
         if odom_msg:
             self.odom_publisher.publish(odom_msg)
+
+    def publish_joint_states(self, joint_state_msg):
+        if joint_state_msg:
+            self.joint_state_publisher.publish(joint_state_msg)
 
     def publish_transform(self, transform_msg):
         if transform_msg:

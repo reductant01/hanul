@@ -62,7 +62,7 @@ Robot {
       }
       geometry DEF base Mesh {
         url [
-          "../../protos/hanul/assets/base.stl"
+          "../../assets/hanul/base.stl"
         ]
       }
       castShadows FALSE
@@ -92,7 +92,7 @@ Robot {
             }
             geometry Mesh {
               url [
-                "../../protos/hanul/assets/Omni Wheel.stl"
+                "../../assets/hanul/omni_wheel.stl"
               ]
             }
             castShadows FALSE
@@ -142,7 +142,7 @@ Robot {
             }
             geometry Mesh {
               url [
-                "../../protos/hanul/assets/Omni Wheel.stl"
+                "../../assets/hanul/omni_wheel.stl"
               ]
             }
             castShadows FALSE
@@ -191,7 +191,7 @@ Robot {
             }
             geometry Mesh {
               url [
-                "../../protos/hanul/assets/Omni Wheel.stl"
+                "../../assets/hanul/omni_wheel.stl"
               ]
             }
             castShadows FALSE

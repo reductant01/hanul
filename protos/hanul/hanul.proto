@@ -4,7 +4,7 @@
 # This is a proto file for Webots for the Hanul
 
 # [중요] OmniWheel PROTO를 불러옵니다.
-EXTERNPROTO "OmniWheel.proto"
+EXTERNPROTO "omniwheel.proto"
 
 PROTO Hanul [
   field  SFVec3f      translation      0 0 0
@@ -39,7 +39,7 @@ PROTO Hanul [
           metalness 0
         }
         geometry DEF base Mesh {
-          url "assets/base.stl"
+          url "../../assets/hanul/base.stl"
         }
       }
 

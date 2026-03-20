@@ -1,5 +1,5 @@
 #VRML_SIM R2025a utf8
-# OmniWheel.proto
+# omniwheel.proto
 
 PROTO OmniWheel [
   field SFVec3f    translation      0 0 0
@@ -46,7 +46,7 @@ PROTO OmniWheel [
             metalness 0
           }
           geometry Mesh {
-            url "assets/Omni Wheel.stl"
+            url "../../assets/hanul/omni_wheel.stl"
           }
         }
       ]

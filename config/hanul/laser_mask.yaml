@@ -1,0 +1,8 @@
+lidar_scan_mask:
+  ros__parameters:
+    input_topic: /scan_raw
+    output_topic: /scan
+    # 현재 SLLIDAR 스캔 기준 뒤쪽 가려짐이 0deg 근처
+    # mask range: degree 단위, [-60deg, 60deg]를 제거하면 총 120deg가 비워진다.
+    mask_lower_angle_deg: -60.0
+    mask_upper_angle_deg: 60.0
