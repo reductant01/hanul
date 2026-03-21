@@ -36,7 +36,43 @@ Visualization Manager:
       Use Fixed Frame: true
     - Class: rviz_default_plugins/TF
       Enabled: true
+      Frames:
+        All Enabled: false
+        base_footprint:
+          Value: true
+        base_link:
+          Value: true
+        lidar_link:
+          Value: true
+        map:
+          Value: true
+        odom:
+          Value: true
+        wheel_back_link:
+          Value: false
+        wheel_left_link:
+          Value: false
+        wheel_right_link:
+          Value: false
+      Marker Scale: 1
       Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: false
+      Tree:
+        map:
+          odom:
+            base_footprint:
+              base_link:
+                lidar_link:
+                  {}
+                wheel_back_link:
+                  {}
+                wheel_left_link:
+                  {}
+                wheel_right_link:
+                  {}
+      Update Interval: 0
     - Alpha: 1
       Class: rviz_default_plugins/RobotModel
       Collision Enabled: false

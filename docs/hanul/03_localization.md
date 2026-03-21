@@ -8,7 +8,7 @@
 
 **이유:** AMCL이 옴니휠용 설정(OmniMotionModel)을 쓰지 않아 기본 모션 모델로만 동작함.
 
-**수정:** `scripts/hanul/hanul_webots.sh`(및 hanul_terminator.sh)에서 `--params-file .../config/hanul/amcl_params.yaml` 사용해 AMCL이 **config/hanul/amcl_params.yaml** 전체를 쓰도록 함.
+**수정:** `scripts/hanul/run_hanul_webots.sh`(및 hanul_terminator.sh)에서 `--params-file .../config/hanul/amcl_params.yaml` 사용해 AMCL이 **config/hanul/amcl_params.yaml** 전체를 쓰도록 함.
 
 ---
 

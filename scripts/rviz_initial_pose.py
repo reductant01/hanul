@@ -7,7 +7,7 @@ loc 모드에서 Nav2 기동 후 실행.
   python3 scripts/rviz_initial_pose.py
       → AMCL 현재 추정을 /initialpose로 전송 (기본 동작)
   python3 scripts/rviz_initial_pose.py --origin [x [y [yaw]]]
-      → 고정 포즈 (기본 0, 0, 0°) 전송. hanul_webots.sh 첫 기동 시 사용.
+      → 고정 포즈 (기본 0, 0, 0°) 전송. run_hanul_webots.sh 첫 기동 시 사용.
   python3 scripts/rviz_initial_pose.py 1.0 0.5 [yaw]
       → 고정 포즈 (1, 0.5) 또는 (1, 0.5, yaw) 전송.
 """

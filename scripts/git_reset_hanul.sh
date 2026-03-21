@@ -7,5 +7,5 @@ git checkout hanul
 git reset --hard origin/hanul
 git clean -fd
 chmod +x scripts/hanul/*.sh
-[ -f hanul_nuc.sh ] && chmod +x hanul_nuc.sh hanul_control_pc.sh hanul_webots.sh 2>/dev/null || true
+[ -f run_hanul_nuc.sh ] && chmod +x run_hanul_nuc.sh run_hanul_control_pc.sh run_hanul_webots.sh 2>/dev/null || true
 echo "hanul 브랜치로 리셋 완료."

@@ -1,3 +1,3 @@
 #!/bin/bash
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec "$SCRIPT_DIR/scripts/hanul/hanul_nuc.sh" "$@"
+exec "$SCRIPT_DIR/scripts/hanul/run_hanul_control_pc.sh" "$@"

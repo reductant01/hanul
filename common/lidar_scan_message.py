@@ -4,7 +4,7 @@ lidar_link 프레임 LaserScan 메시지 생성. 발행은 ros_bridge.
 from sensor_msgs.msg import LaserScan
 
 
-class TFLidarScan:
+class LidarScanMessage:
     def __init__(self, lidar_range_min=0.05, lidar_range_max=30.0):
         self.lidar_range_min = lidar_range_min
         self.lidar_range_max = lidar_range_max

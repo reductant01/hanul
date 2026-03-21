@@ -8,7 +8,7 @@
 
 **이유:** Webots를 일반 실행하면 ROS 환경이 주입되지 않거나, 터미널에 가상환경(.venv)이 켜져 있어 시스템 ROS가 가려짐.
 
-**수정:** (1) Webots를 `./scripts/hanul/hanul_webots.sh map` 또는 `loc`으로 실행. (2) 가상환경이 켜져 있으면 `deactivate` 후 스크립트 실행. (3) `source /opt/ros/jazzy/setup.bash` 오타 없이 입력.
+**수정:** (1) Webots를 `./scripts/hanul/run_hanul_webots.sh map` 또는 `loc`으로 실행. (2) 가상환경이 켜져 있으면 `deactivate` 후 스크립트 실행. (3) `source /opt/ros/jazzy/setup.bash` 오타 없이 입력.
 
 ---
 
@@ -18,7 +18,7 @@
 
 **이유:** odom TF와 스캔 메시지의 stamp가 달라서 TF 캐시에 맞는 변환이 없음.
 
-**수정:** controller·tf_odom_base/tf_lidar_scan에서 odom TF와 스캔에 **동일 stamp**를 사용하도록 같은 시각 사용.
+**수정:** controller·tf_odom_base/lidar_scan_message에서 odom TF와 스캔에 **동일 stamp**를 사용하도록 같은 시각 사용.
 
 ---
 

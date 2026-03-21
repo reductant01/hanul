@@ -10,7 +10,7 @@ from common.joint_state_message import create_joint_state_message
 from common.odom_message import create_odometry_message
 from common.tf_odom_base import create_odometry_transform
 from common.tf_base_lidar import TFBaseLidar
-from common.tf_lidar_scan import TFLidarScan
+from common.lidar_scan_message import LidarScanMessage
 from common.tf_map_odom import should_publish_map_odom_identity, create_map_odom_identity
 from common.ros_bridge import RobotROSBridge, init_ros_node, shutdown_ros_node
 
@@ -20,16 +20,16 @@ INIT_YAW = 0.0
 
 # 실제 로봇의 base_footprint 기준이 RViz/실물 전면과 180도 어긋난 경우,
 # NUC 경로에서만 body frame을 통째로 다시 정의한다.
-REAL_CMD_SIGN_VX = -1.0
-REAL_CMD_SIGN_VY = -1.0
+REAL_CMD_SIGN_VX = 1.0
+REAL_CMD_SIGN_VY = 1.0
 REAL_CMD_SIGN_W = 1.0
-REAL_ODOM_YAW_OFFSET = math.pi
-REAL_ODOM_TWIST_SIGN_VX = -1.0
-REAL_ODOM_TWIST_SIGN_VY = -1.0
-REAL_LIDAR_X = -0.085
+REAL_ODOM_YAW_OFFSET = 0.0
+REAL_ODOM_TWIST_SIGN_VX = 1.0
+REAL_ODOM_TWIST_SIGN_VY = 1.0
+REAL_LIDAR_X = 0.085
 REAL_LIDAR_Y = 0.0
 REAL_LIDAR_Z = 0.113
-REAL_LIDAR_YAW = math.pi
+REAL_LIDAR_YAW = 0.0
 
 def main():
     print("Hanul Controller initializing...")
@@ -42,7 +42,7 @@ def main():
         lidar_y=REAL_LIDAR_Y,
         lidar_z=REAL_LIDAR_Z,
     )
-    tf_lidar_scan = TFLidarScan()
+    lidar_scan_message = LidarScanMessage()
     init_ros_node()
     ros_bridge = RobotROSBridge('hanul_controller_node')
     stamp = ros_bridge.get_clock().now().to_msg()
@@ -75,13 +75,6 @@ def main():
     )
     ros_bridge.publish_transform(
         tf_base_lidar.create_lidar_transform(
-            ros_bridge,
-            stamp=stamp,
-            lidar_yaw=REAL_LIDAR_YAW,
-        )
-    )
-    ros_bridge.publish_transform(
-        tf_base_lidar.create_laser_transform(
             ros_bridge,
             stamp=stamp,
             lidar_yaw=REAL_LIDAR_YAW,
@@ -155,19 +148,12 @@ def main():
                     lidar_yaw=REAL_LIDAR_YAW,
                 )
             )
-            ros_bridge.publish_transform(
-                tf_base_lidar.create_laser_transform(
-                    ros_bridge,
-                    stamp=stamp,
-                    lidar_yaw=REAL_LIDAR_YAW,
-                )
-            )
             ros_bridge.publish_collision_polygons_rviz(stamp=stamp)
             if step_count % steps_per_scan_and_identity == 0:
                 if should_publish_map_odom_identity(x_glob, y_glob, theta_glob):
                     ros_bridge.publish_transform(create_map_odom_identity(ros_bridge, stamp=stamp))
                 lidar_data = robot.get_lidar_data()
-                scan_msg = tf_lidar_scan.create_laser_scan_msg(
+                scan_msg = lidar_scan_message.create_laser_scan_msg(
                     lidar_data['ranges'],
                     lidar_data['fov'],
                     lidar_data['min_range'],

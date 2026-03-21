@@ -1,5 +1,5 @@
 """
-base_footprint → lidar_link / laser TF 생성. 발행은 ros_bridge.
+base_footprint → lidar_link TF 생성. 발행은 ros_bridge.
 """
 import math
 from geometry_msgs.msg import TransformStamped
@@ -23,9 +23,4 @@ class TFBaseLidar:
         t.transform.rotation.y = 0.0
         t.transform.rotation.z = math.sin(lidar_yaw / 2.0)
         t.transform.rotation.w = math.cos(lidar_yaw / 2.0)
-        return t
-
-    def create_laser_transform(self, ros_node, stamp=None, lidar_yaw=0.0):
-        t = self.create_lidar_transform(ros_node, stamp=stamp, lidar_yaw=lidar_yaw)
-        t.child_frame_id = 'laser'
         return t

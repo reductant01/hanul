@@ -20,7 +20,7 @@ from common.omni_odometry import OmniOdometry
 from common.odom_message import create_odometry_message
 from common.tf_odom_base import create_odometry_transform
 from common.tf_base_lidar import TFBaseLidar
-from common.tf_lidar_scan import TFLidarScan
+from common.lidar_scan_message import LidarScanMessage
 from common.tf_map_odom import should_publish_map_odom_identity, create_map_odom_identity
 from common.ros_bridge import RobotROSBridge, init_ros_node, shutdown_ros_node
 
@@ -44,7 +44,7 @@ def main():
 
     odometry = OmniOdometry()
     tf_base_lidar = TFBaseLidar()
-    tf_lidar_scan = TFLidarScan()
+    lidar_scan_message = LidarScanMessage()
     init_ros_node()
     ros_bridge = RobotROSBridge('hanul_controller_node')
     stamp = ros_bridge.get_clock().now().to_msg()
@@ -116,7 +116,7 @@ def main():
                 if should_publish_map_odom_identity(x_glob, y_glob, theta_glob):
                     ros_bridge.publish_transform(create_map_odom_identity(ros_bridge, stamp=stamp))
                 lidar_data = robot.get_lidar_data()
-                scan_msg = tf_lidar_scan.create_laser_scan_msg(
+                scan_msg = lidar_scan_message.create_laser_scan_msg(
                     lidar_data['ranges'][::-1],
                     lidar_data['fov'],
                     lidar_data['min_range'],

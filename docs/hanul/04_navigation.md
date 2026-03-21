@@ -44,7 +44,7 @@
 
 **이유:** Costmap은 odom TF가 있어야 맵을 만들고 발행함. Nav2가 컨트롤러보다 먼저 떠서, 기동 시점에는 아직 odom이 없음.
 
-**수정:** `hanul_webots.sh` loc 모드에서 Nav2 실행 전에 `scripts/wait_tf_odom.py 6` 실행. 재생(▶)을 6초 안에 누르면 costmap이 뜸.
+**수정:** `run_hanul_webots.sh` loc 모드에서 Nav2 실행 전에 `scripts/wait_tf_odom.py 6` 실행. 재생(▶)을 6초 안에 누르면 costmap이 뜸.
 
 ---
 
@@ -64,7 +64,7 @@
 
 **이유:** 패널은 **노드 이름**이 `lifecycle_manager_localization`(로컬라이제이션), `lifecycle_manager_navigation`(네비게이션)인 lifecycle 매니저만 인식함. 이름이 다르면 실제로는 동작해도 inactive로만 보임.
 
-**수정:** map_server·amcl을 관리하는 lifecycle 매니저 실행 시 `-r __node:=lifecycle_manager_localization` 추가. (`hanul_webots.sh`에 반영됨.) Navigation은 `navigation_launch.py` 기동이 끝날 때까지 대기하면 active로 바뀜.
+**수정:** map_server·amcl을 관리하는 lifecycle 매니저 실행 시 `-r __node:=lifecycle_manager_localization` 추가. (`run_hanul_webots.sh`에 반영됨.) Navigation은 `navigation_launch.py` 기동이 끝날 때까지 대기하면 active로 바뀜.
 
 ---
 
@@ -75,7 +75,7 @@
   **우리 사용처:** 우리가 직접 구독하는 건 아님. Nav2 **controller_server**가 이 costmap을 읽어서 경로 추종·장애물 회피 시 “어디가 막혀 있는지” 판단하고, 그 결과를 cmd_vel로 내보냄. RViz는 같은 토픽을 구독해서 **화면에만** 그려 줌.
 
 - **Map (/map)**  
-  **발행:** **nav2_map_server** (map_server 노드). `hanul_webots.sh` loc 모드의 Map Server 탭에서 띄움.  
+  **발행:** **nav2_map_server** (map_server 노드). `run_hanul_webots.sh` loc 모드의 Map Server 탭에서 띄움.  
   **사용처:** AMCL이 로컬라이제이션할 때 맵으로 사용하고, Nav2 planner가 경로 계획할 때 사용함. RViz는 `/map`을 구독해 배경 맵으로 표시함.
 
 - **LaserScan (/scan)**  
@@ -91,7 +91,7 @@
   **사용처:** Nav2 **controller_server**가 이 경로를 따라 cmd_vel을 만듦. RViz는 `/plan`을 구독해 “계획된 경로”를 녹색 선으로 표시함.
 
 - **TF**  
-  **발행:** map→odom은 **AMCL**, odom→base_footprint 등은 우리 **컨트롤러**(tf_odom_base/tf_base_lidar/tf_lidar_scan), map→odom 보조는 **tf_map_odom**+ros_bridge, lidar_link 등도 컨트롤러.  
+  **발행:** map→odom은 **AMCL**, odom→base_footprint 등은 우리 **컨트롤러**(tf_odom_base/tf_base_lidar/lidar_scan_message), map→odom 보조는 **tf_map_odom**+ros_bridge, lidar_link 등도 컨트롤러.  
   **사용처:** 모든 노드가 좌표 변환할 때 사용. RViz는 TF를 구독해 축/프레임을 화면에 그림.
 
 - **Grid**  

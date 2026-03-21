@@ -1,5 +1,5 @@
 #!/bin/bash
-# 제어 PC에서만 실행. SLAM 또는 Map/AMCL/Nav2, RViz, Teleop. NUC에서는 hanul_nuc.sh 별도 실행.
+# 제어 PC에서만 실행. SLAM 또는 Map/AMCL/Nav2, RViz, Teleop. NUC에서는 run_hanul_nuc.sh 별도 실행.
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -11,14 +11,14 @@ case "$MODE_INPUT" in
   loc|localization) MODE="control_pc_loc" ;;
   *)
     echo "사용법: $0 [map|loc]"
-    echo "  map: SLAM + RViz + Teleop (NUC에서 hanul_nuc.sh 별도 실행)"
-    echo "  loc: Map Server + AMCL + Nav2 + RViz + Teleop (NUC에서 hanul_nuc.sh 별도 실행)"
+    echo "  map: SLAM + RViz + Teleop (NUC에서 run_hanul_nuc.sh 별도 실행)"
+    echo "  loc: Map Server + AMCL + Nav2 + RViz + Teleop (NUC에서 run_hanul_nuc.sh 별도 실행)"
     echo "  NUC와 같은 네트워크, 같은 ROS_DOMAIN_ID 필요."
     exit 1
     ;;
 esac
 
-TITLE_TOP_1="[NUC] hanul_nuc.sh 별도 실행"
+TITLE_TOP_1="[NUC] run_hanul_nuc.sh 별도 실행"
 CMD_TOP_1="$CMD_EMPTY"
 
 if [[ "$MODE" == "control_pc_map" ]]; then
