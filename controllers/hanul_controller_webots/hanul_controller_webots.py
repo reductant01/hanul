@@ -58,7 +58,7 @@ def main():
             positions=[0.0, 0.0, 0.0],
         )
     )
-    ros_bridge.publish_transform(tf_base_lidar.create_lidar_transform(ros_bridge, stamp=stamp, lidar_yaw=LIDAR_YAW))
+    ros_bridge.publish_static_transform(tf_base_lidar.create_lidar_transform(ros_bridge, stamp=stamp, lidar_yaw=LIDAR_YAW))
     print("Hanul Webots Controller ready\n")
 
     print("Starting main loop. Waiting for /cmd_vel...\n")
@@ -110,7 +110,6 @@ def main():
                     positions=[pos_L, pos_R, pos_B],
                 )
             )
-            ros_bridge.publish_transform(tf_base_lidar.create_lidar_transform(ros_bridge, stamp=stamp, lidar_yaw=LIDAR_YAW))
             ros_bridge.publish_collision_polygons_rviz(stamp=stamp)
             if step_count % steps_per_scan_and_identity == 0:
                 if should_publish_map_odom_identity(x_glob, y_glob, theta_glob):

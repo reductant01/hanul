@@ -39,7 +39,7 @@ Visualization Manager:
         base_footprint:
           Value: true
         base_link:
-          Value: true
+          Value: false
         lidar_link:
           Value: true
         map:

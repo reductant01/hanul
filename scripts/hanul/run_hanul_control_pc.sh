@@ -28,7 +28,7 @@ if [[ "$MODE" == "control_pc_map" ]]; then
   TITLE_BOTTOM_3="Collision Monitor"
   TITLE_BOTTOM_4="cmd_vel_output"
 
-  CMD_TOP_2="$SETUP_CMD; ros2 launch slam_toolbox online_async_launch.py use_sim_time:=false slam_params_file:=$PROJECT_ROOT/config/hanul/slam_toolbox_params.yaml; exec bash"
+  CMD_TOP_2="$SETUP_CMD; cd $PROJECT_ROOT && python3 scripts/wait_tf_odom.py 10; ros2 launch slam_toolbox online_async_launch.py use_sim_time:=false slam_params_file:=$PROJECT_ROOT/config/hanul/slam_toolbox_params.yaml; exec bash"
   CMD_TOP_3="$CMD_ROBOT_MODEL"
   CMD_TOP_4="$CMD_EMPTY"
   CMD_BOTTOM_3="$CMD_COLLISION_MONITOR"

@@ -73,7 +73,7 @@ def main():
             positions=[0.0, 0.0, 0.0],
         )
     )
-    ros_bridge.publish_transform(
+    ros_bridge.publish_static_transform(
         tf_base_lidar.create_lidar_transform(
             ros_bridge,
             stamp=stamp,
@@ -85,7 +85,10 @@ def main():
     print("Starting main loop. Waiting for /cmd_vel...\n")
     step_count = 0
     log_interval = 1000
-    steps_per_scan_and_identity = 1
+    # 실로봇은 라이다/마스킹/SLAM 처리까지 모두 분리 프로세스로 거치므로
+    # 50 Hz 그대로 /scan 을 내보내면 slam_toolbox queue가 쉽게 밀린다.
+    # scan 주기를 약간 낮춰 처리 여유를 확보한다.
+    steps_per_scan_and_identity = 2
     last_stamp_ns = None
 
     try:
@@ -139,13 +142,6 @@ def main():
                     stamp=stamp,
                     names=["joint_wheel_left", "joint_wheel_right", "joint_wheel_back"],
                     positions=[pos_L, pos_R, pos_B],
-                )
-            )
-            ros_bridge.publish_transform(
-                tf_base_lidar.create_lidar_transform(
-                    ros_bridge,
-                    stamp=stamp,
-                    lidar_yaw=REAL_LIDAR_YAW,
                 )
             )
             ros_bridge.publish_collision_polygons_rviz(stamp=stamp)

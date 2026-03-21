@@ -15,6 +15,7 @@ try:
     from rclpy.node import Node
     from tf2_ros import Buffer, TransformListener
     from rclpy.duration import Duration
+    from rclpy.time import Time
 except ImportError:
     print("ROS 2 환경을 먼저 로드하세요: source /opt/ros/jazzy/setup.bash")
     sys.exit(1)
@@ -41,10 +42,11 @@ def main():
     try:
         while rclpy.ok():
             rclpy.spin_once(node, timeout_sec=check_interval)
-            now = node.get_clock().now()
             try:
+                # 최신 available transform 존재 여부만 확인한다.
+                # exact "now" 시각을 요구하면 TF가 있어도 false timeout이 날 수 있다.
                 buffer.lookup_transform(
-                    target_frame, source_frame, now, Duration(seconds=0)
+                    target_frame, source_frame, Time(), Duration(seconds=0)
                 )
                 node.get_logger().info("odom -> base_footprint OK")
                 return 0
