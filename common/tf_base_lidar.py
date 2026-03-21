@@ -6,7 +6,7 @@ from geometry_msgs.msg import TransformStamped
 
 
 class TFBaseLidar:
-    def __init__(self, lidar_x=0.085, lidar_y=0.0, lidar_z=0.113):
+    def __init__(self, lidar_x=-0.085, lidar_y=0.0, lidar_z=0.113):
         self.lidar_x = lidar_x
         self.lidar_y = lidar_y
         self.lidar_z = lidar_z
