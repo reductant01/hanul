@@ -9,6 +9,7 @@ import math
 import rclpy
 from rclpy.node import Node
 from rclpy.duration import Duration
+from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import LaserScan
 
 
@@ -36,8 +37,14 @@ class LidarScanMask(Node):
         self.mask_lower_angle = math.radians(mask_lower_angle_deg)
         self.mask_upper_angle = math.radians(mask_upper_angle_deg)
 
-        self.publisher = self.create_publisher(LaserScan, output_topic, 10)
-        self.subscription = self.create_subscription(LaserScan, input_topic, self._on_scan, 10)
+        # LaserScan 은 최신 데이터가 중요하므로 sensor-data QoS 로 stale backlog 를 줄인다.
+        self.publisher = self.create_publisher(LaserScan, output_topic, qos_profile_sensor_data)
+        self.subscription = self.create_subscription(
+            LaserScan,
+            input_topic,
+            self._on_scan,
+            qos_profile_sensor_data,
+        )
 
         self.get_logger().info(
             "Masking %s -> %s, removing %.1fdeg .. %.1fdeg (restamp=%s, offset=%.3fs, every_n=%d)"

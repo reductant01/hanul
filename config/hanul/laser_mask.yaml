@@ -7,7 +7,7 @@ lidar_scan_mask:
     mask_lower_angle_deg: -60.0
     mask_upper_angle_deg: 60.0
     # TF보다 살짝 미래 시각으로 보이는 문제를 줄이기 위해 /scan stamp를 조금 과거로 당긴다.
-    restamp_offset_sec: 0.05
+    restamp_offset_sec: 0.10
     # 실로봇 S2 스캔이 너무 촘촘하면 slam_toolbox queue가 밀릴 수 있어
     # upstream에서 3개 중 1개만 /scan으로 내보낸다.
-    publish_every_n: 3
+    publish_every_n: 2

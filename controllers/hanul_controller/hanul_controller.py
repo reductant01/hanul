@@ -89,6 +89,7 @@ def main():
     # 50 Hz 그대로 /scan 을 내보내면 slam_toolbox queue가 쉽게 밀린다.
     # scan 주기를 약간 낮춰 처리 여유를 확보한다.
     steps_per_scan_and_identity = 2
+    polygon_publish_every_n = 10
     last_stamp_ns = None
 
     try:
@@ -144,7 +145,8 @@ def main():
                     positions=[pos_L, pos_R, pos_B],
                 )
             )
-            ros_bridge.publish_collision_polygons_rviz(stamp=stamp)
+            if step_count % polygon_publish_every_n == 0:
+                ros_bridge.publish_collision_polygons_rviz(stamp=stamp)
             if step_count % steps_per_scan_and_identity == 0:
                 if should_publish_map_odom_identity(x_glob, y_glob, theta_glob):
                     ros_bridge.publish_transform(create_map_odom_identity(ros_bridge, stamp=stamp))

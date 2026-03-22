@@ -15,7 +15,7 @@ slam_toolbox:
     mode: mapping
 
     debug_logging: false
-    throttle_scans: 3
+    throttle_scans: 2
     transform_publish_period: 0.02
     map_update_interval: 0.1
     restamp_tf: true

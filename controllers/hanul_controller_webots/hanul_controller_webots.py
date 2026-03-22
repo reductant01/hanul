@@ -15,8 +15,8 @@ import math
 import rclpy
 
 from hanul_hardware_webots import HanulWebots
-from common.joint_state_message import create_joint_state_message
 from common.omni_odometry import OmniOdometry
+from common.joint_state_message import create_joint_state_message
 from common.odom_message import create_odometry_message
 from common.tf_odom_base import create_odometry_transform
 from common.tf_base_lidar import TFBaseLidar
@@ -65,6 +65,7 @@ def main():
     step_count = 0
     log_interval = 1000
     steps_per_scan_and_identity = 8
+    polygon_publish_every_n = 10
     last_stamp_ns = None
 
     try:
@@ -110,7 +111,8 @@ def main():
                     positions=[pos_L, pos_R, pos_B],
                 )
             )
-            ros_bridge.publish_collision_polygons_rviz(stamp=stamp)
+            if step_count % polygon_publish_every_n == 0:
+                ros_bridge.publish_collision_polygons_rviz(stamp=stamp)
             if step_count % steps_per_scan_and_identity == 0:
                 if should_publish_map_odom_identity(x_glob, y_glob, theta_glob):
                     ros_bridge.publish_transform(create_map_odom_identity(ros_bridge, stamp=stamp))

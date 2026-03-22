@@ -1,10 +1,17 @@
 """
 map→odom identity 판단 및 TF 생성. 발행은 ros_bridge.publish_transform.
 """
+import os
+
 from geometry_msgs.msg import TransformStamped
 
 
 def should_publish_map_odom_identity(x, y, theta, threshold=0.1):
+    # map->odom 은 원칙적으로 SLAM Toolbox 또는 AMCL 이 담당한다.
+    # 기본값은 비활성으로 두고, 정말 필요할 때만 환경변수로 켠다.
+    enabled = os.getenv("HANUL_PUBLISH_MAP_ODOM_IDENTITY", "").lower() in ("1", "true", "yes", "on")
+    if not enabled:
+        return False
     if abs(x) < threshold and abs(y) < threshold and abs(theta) < threshold:
         return True
     return False

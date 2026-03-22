@@ -5,6 +5,7 @@ import threading
 
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 from geometry_msgs.msg import Twist, PolygonStamped
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import JointState, LaserScan
@@ -26,8 +27,8 @@ class RobotROSBridge(Node):
 
         self.create_subscription(Twist, '/cmd_vel', self._on_cmd_vel_received, 10)
         self.cmd_vel_to_robot_pub = self.create_publisher(Twist, '/cmd_vel_to_robot', 10)
-        self.scan_raw_publisher = self.create_publisher(LaserScan, '/scan_raw', 10)
-        self.scan_publisher = self.create_publisher(LaserScan, '/scan', 10)
+        self.scan_raw_publisher = self.create_publisher(LaserScan, '/scan_raw', qos_profile_sensor_data)
+        self.scan_publisher = self.create_publisher(LaserScan, '/scan', qos_profile_sensor_data)
         self.odom_publisher = self.create_publisher(Odometry, '/odom', 10)
         self.joint_state_publisher = self.create_publisher(JointState, '/joint_states', 10)
         self.tf_broadcaster = TransformBroadcaster(self)
