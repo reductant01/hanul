@@ -44,7 +44,7 @@ def main():
     )
     lidar_scan_message = LidarScanMessage()
     init_ros_node()
-    ros_bridge = RobotROSBridge('hanul_controller_node')
+    ros_bridge = RobotROSBridge('hanul_controller_node', enable_scan_publisher=False, enable_polygon_publishers=False)
     stamp = ros_bridge.get_clock().now().to_msg()
     ros_bridge.publish_transform(
         create_odometry_transform(
@@ -160,7 +160,7 @@ def main():
                     stamp=stamp,
                 )
                 if scan_msg:
-                    ros_bridge.publish_scan(scan_msg)
+                    ros_bridge.publish_scan_raw(scan_msg)
 
             step_count += 1
             if step_count % log_interval == 0:

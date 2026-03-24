@@ -15,7 +15,7 @@
 # first_map_only: true면 첫 맵만 사용. 맵이 한 번 늦게 오면 false일 때 구독 실패할 수 있음.
 amcl:
   ros__parameters:
-    base_frame_id: "base_footprint"
+    base_frame_id: "base_link"
     global_frame_id: "map"
     odom_frame_id: "odom"
     scan_topic: "scan"
@@ -45,7 +45,7 @@ amcl:
 bt_navigator:
   ros__parameters:
     global_frame: map
-    robot_base_frame: base_footprint
+    robot_base_frame: base_link
     odom_topic: /odom
     bt_loop_duration: 10
     default_server_timeout: 20
@@ -115,7 +115,7 @@ local_costmap:
       update_frequency: 15.0
       publish_frequency: 10.0
       global_frame: odom
-      robot_base_frame: base_footprint
+      robot_base_frame: base_link
       rolling_window: true
       width: 3
       height: 3
@@ -146,7 +146,7 @@ global_costmap:
       update_frequency: 4.0
       publish_frequency: 4.0
       global_frame: map
-      robot_base_frame: base_footprint
+      robot_base_frame: base_link
       robot_radius: 0.22
       resolution: 0.05
       track_unknown_space: true
@@ -206,7 +206,7 @@ behavior_server:
       plugin: "nav2_behaviors::DriveOnHeading"
     wait:
       plugin: "nav2_behaviors::Wait"
-    robot_base_frame: base_footprint
+    robot_base_frame: base_link
 
 # [Nav2 터미널 - 속도 완화] controller가 내보낸 /cmd_vel을 완만하게 해서 로봇 구동이 덜 거침 (옴니휠이라 linear.y 허용)
 velocity_smoother:
@@ -225,7 +225,7 @@ velocity_smoother:
 # collision_monitor: unfiltered → filtered. escape 노드가 filtered=0일 때 후진(unfiltered)만 cmd_vel로 통과
 collision_monitor:
   ros__parameters:
-    base_frame_id: "base_footprint"
+    base_frame_id: "base_link"
     odom_frame_id: "odom"
     cmd_vel_in_topic: "cmd_vel_unfiltered"
     cmd_vel_out_topic: "cmd_vel_filtered"
@@ -245,7 +245,7 @@ collision_monitor:
     #   polygon_pub_topic: "polygon_approach"
     PolygonStop:
       type: "polygon"
-      points: "[[-0.3, 0.3], [-0.3, -0.3], [0, -0.3], [0, 0.3]]"
+      points: "[[0.0, 0.3], [0.0, -0.3], [0.3, -0.3], [0.3, 0.3]]"
       action_type: "stop"
       min_points: 4
       visualize: True
@@ -267,7 +267,7 @@ collision_monitor:
 docking_server:
   ros__parameters:
     controller_frequency: 50.0
-    base_frame: "base_footprint"
+    base_frame: "base_link"
     fixed_frame: "odom"
     odom_topic: "odom"
     dock_plugins: ["charging_dock"]

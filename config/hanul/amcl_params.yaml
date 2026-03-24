@@ -1,6 +1,6 @@
 amcl:
   ros__parameters:
-    base_frame_id: "base_footprint"
+    base_frame_id: "base_link"
     global_frame_id: "map"
     odom_frame_id: "odom"
     scan_topic: "scan"

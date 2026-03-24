@@ -173,7 +173,7 @@ Visualization Manager:
         Value: /global_costmap/costmap_updates
     - Class: rviz_default_plugins/Polygon
       Color: 255; 180; 0
-      Enabled: false
+      Enabled: true
       Name: polygon_approach
       Topic:
         Depth: 5
@@ -183,7 +183,7 @@ Visualization Manager:
         Value: /polygon_approach
     - Class: rviz_default_plugins/Polygon
       Color: 255; 0; 0
-      Enabled: false
+      Enabled: true
       Name: polygon_stop
       Topic:
         Depth: 5
@@ -193,7 +193,7 @@ Visualization Manager:
         Value: /polygon_stop
     - Class: rviz_default_plugins/Polygon
       Color: 0; 100; 255
-      Enabled: false
+      Enabled: true
       Name: polygon_slowdown
       Topic:
         Depth: 5

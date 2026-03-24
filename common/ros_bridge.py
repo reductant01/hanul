@@ -22,20 +22,20 @@ from common.cmd_vel_converter import CmdVelConverter
 class RobotROSBridge(Node):
     """ROS 2 토픽 통신 담당"""
 
-    def __init__(self, node_name='robot_controller_node'):
+    def __init__(self, node_name='robot_controller_node', enable_scan_publisher=True, enable_polygon_publishers=True):
         super().__init__(node_name)
 
         self.create_subscription(Twist, '/cmd_vel', self._on_cmd_vel_received, 10)
         self.cmd_vel_to_robot_pub = self.create_publisher(Twist, '/cmd_vel_to_robot', 10)
         self.scan_raw_publisher = self.create_publisher(LaserScan, '/scan_raw', qos_profile_sensor_data)
-        self.scan_publisher = self.create_publisher(LaserScan, '/scan', qos_profile_sensor_data)
+        self.scan_publisher = self.create_publisher(LaserScan, '/scan', qos_profile_sensor_data) if enable_scan_publisher else None
         self.odom_publisher = self.create_publisher(Odometry, '/odom', 10)
         self.joint_state_publisher = self.create_publisher(JointState, '/joint_states', 10)
         self.tf_broadcaster = TransformBroadcaster(self)
         self.static_tf_broadcaster = StaticTransformBroadcaster(self)
-        self.polygon_approach_pub = self.create_publisher(PolygonStamped, '/polygon_approach', 10)
-        self.polygon_stop_pub = self.create_publisher(PolygonStamped, '/polygon_stop', 10)
-        self.polygon_slowdown_pub = self.create_publisher(PolygonStamped, '/polygon_slowdown', 10)
+        self.polygon_approach_pub = self.create_publisher(PolygonStamped, '/polygon_approach', 10) if enable_polygon_publishers else None
+        self.polygon_stop_pub = self.create_publisher(PolygonStamped, '/polygon_stop', 10) if enable_polygon_publishers else None
+        self.polygon_slowdown_pub = self.create_publisher(PolygonStamped, '/polygon_slowdown', 10) if enable_polygon_publishers else None
 
         self.cmd_vel = [0.0, 0.0, 0.0]
         self.cmd_vel_lock = threading.Lock()
@@ -53,7 +53,7 @@ class RobotROSBridge(Node):
             return (self.cmd_vel[0], self.cmd_vel[1], self.cmd_vel[2])
 
     def publish_scan(self, scan_msg):
-        if scan_msg:
+        if scan_msg and self.scan_publisher is not None:
             with self._scan_lock:
                 self._last_scan = scan_msg
             self.scan_publisher.publish(scan_msg)
@@ -79,9 +79,11 @@ class RobotROSBridge(Node):
             self.static_tf_broadcaster.sendTransform(transform_msg)
 
     def publish_collision_polygons_rviz(self, stamp=None):
+        if self.polygon_approach_pub is None or self.polygon_stop_pub is None or self.polygon_slowdown_pub is None:
+            return
         if stamp is None:
             stamp = self.get_clock().now().to_msg()
-        frame_id = 'base_footprint'
+        frame_id = 'base_link'
         self.polygon_approach_pub.publish(create_approach_polygon_stamped(frame_id, stamp))
         self.polygon_stop_pub.publish(create_stop_polygon_stamped(frame_id, stamp))
         self.polygon_slowdown_pub.publish(create_slowdown_polygon_stamped(frame_id, stamp))
