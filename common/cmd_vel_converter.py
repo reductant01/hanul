@@ -5,7 +5,7 @@ from geometry_msgs.msg import Twist
 
 
 ROS_TO_ROBOT_VX_SIGN = 1.0
-ROS_TO_ROBOT_VY_SIGN = -1.0
+ROS_TO_ROBOT_VY_SIGN = 1.0
 ROS_TO_ROBOT_W_SIGN = 1.0
 
 

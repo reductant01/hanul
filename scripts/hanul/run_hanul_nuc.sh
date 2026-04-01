@@ -16,6 +16,10 @@ if tmux has-session -t "$SESSION" 2>/dev/null; then
   exec tmux attach -t "$SESSION"
 fi
 
+# shellcheck source=/dev/null
+source "$PROJECT_ROOT/scripts/hanul/kill_hanul_process.sh"
+hanul_cleanup_previous_sessions
+
 tmux new-session -d -s "$SESSION" -n nuc
 tmux send-keys -t "${SESSION}:0.0" "cd $PROJECT_ROOT && source /opt/ros/jazzy/setup.bash && export PYTHONPATH=$PROJECT_ROOT:\$PYTHONPATH && export MOTOR_PORT=$MOTOR_PORT && [ -e \"$MOTOR_PORT\" ] && sudo chmod 666 \"$MOTOR_PORT\" ; cd controllers/hanul_controller && python3 hanul_controller.py" C-m
 tmux split-window -h -t "${SESSION}:0.0"

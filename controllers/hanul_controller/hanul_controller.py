@@ -20,16 +20,15 @@ INIT_YAW = 0.0
 
 # 실제 로봇의 base_footprint 기준이 RViz/실물 전면과 180도 어긋난 경우,
 # NUC 경로에서만 body frame을 통째로 다시 정의한다.
-REAL_CMD_SIGN_VX = 1.0
-REAL_CMD_SIGN_VY = 1.0
-REAL_CMD_SIGN_W = 1.0
-REAL_ODOM_YAW_OFFSET = 0.0
-REAL_ODOM_TWIST_SIGN_VX = 1.0
-REAL_ODOM_TWIST_SIGN_VY = 1.0
-REAL_LIDAR_X = -0.085
-REAL_LIDAR_Y = 0.0
-REAL_LIDAR_Z = 0.113
-REAL_LIDAR_YAW = 0.0
+REAL_CMD_INPUT_SIGN_VX = 1.0
+REAL_CMD_INPUT_SIGN_VY = -1.0
+REAL_CMD_INPUT_SIGN_W = 1.0
+
+REAL_ODOM_OUTPUT_SIGN_VX = 1.0
+REAL_ODOM_OUTPUT_SIGN_VY = 1.0
+REAL_ODOM_TO_BASE_YAW_OFFSET = 0.0
+
+REAL_BASE_TO_LIDAR_YAW = 0.0
 
 def main():
     print("Hanul Controller initializing...")
@@ -37,11 +36,7 @@ def main():
     print("Real robot hardware (ID L=%s R=%s B=%s) initialized" % (robot.motor_id_left, robot.motor_id_right, robot.motor_id_back))
 
     odometry = OmniOdometry()
-    tf_base_lidar = TFBaseLidar(
-        lidar_x=REAL_LIDAR_X,
-        lidar_y=REAL_LIDAR_Y,
-        lidar_z=REAL_LIDAR_Z,
-    )
+    tf_base_lidar = TFBaseLidar()
     lidar_scan_message = LidarScanMessage()
     init_ros_node()
     ros_bridge = RobotROSBridge('hanul_controller_node', enable_scan_publisher=False, enable_polygon_publishers=False)
@@ -53,14 +48,14 @@ def main():
             INIT_YAW,
             ros_bridge,
             stamp=stamp,
-            yaw_offset=REAL_ODOM_YAW_OFFSET,
+            yaw_offset=REAL_ODOM_TO_BASE_YAW_OFFSET,
         )
     )
     ros_bridge.publish_odom(
         create_odometry_message(
             INIT_X,
             INIT_Y,
-            INIT_YAW + REAL_ODOM_YAW_OFFSET,
+            INIT_YAW + REAL_ODOM_TO_BASE_YAW_OFFSET,
             ros_bridge,
             stamp=stamp,
         )
@@ -77,7 +72,7 @@ def main():
         tf_base_lidar.create_lidar_transform(
             ros_bridge,
             stamp=stamp,
-            lidar_yaw=REAL_LIDAR_YAW,
+            lidar_yaw=REAL_BASE_TO_LIDAR_YAW,
         )
     )
     print("Hanul Controller ready\n")
@@ -97,9 +92,9 @@ def main():
             rclpy.spin_once(ros_bridge, timeout_sec=0)
             vx, vy, w = ros_bridge.get_cmd_vel()
             robot.set_cmd_vel(
-                REAL_CMD_SIGN_VX * vx,
-                REAL_CMD_SIGN_VY * vy,
-                REAL_CMD_SIGN_W * w,
+                REAL_CMD_INPUT_SIGN_VX * vx,
+                REAL_CMD_INPUT_SIGN_VY * vy,
+                REAL_CMD_INPUT_SIGN_W * w,
             )
             pos_L, pos_R, pos_B = robot.get_encoder_values()
             delta_x, delta_y, delta_theta = odometry.update(pos_L, pos_R, pos_B)
@@ -107,13 +102,13 @@ def main():
             x_glob = x + INIT_X
             y_glob = y + INIT_Y
             theta_glob = theta + INIT_YAW
-            theta_glob_display = theta_glob + REAL_ODOM_YAW_OFFSET
+            theta_glob_display = theta_glob + REAL_ODOM_TO_BASE_YAW_OFFSET
             stamp = ros_bridge.get_clock().now().to_msg()
             stamp_ns = ros_bridge.get_clock().now().nanoseconds
             dt = 0.0 if last_stamp_ns is None else max((stamp_ns - last_stamp_ns) / 1e9, 1e-6)
             last_stamp_ns = stamp_ns
-            odom_vx = 0.0 if dt == 0.0 else (REAL_ODOM_TWIST_SIGN_VX * (delta_x / dt))
-            odom_vy = 0.0 if dt == 0.0 else (REAL_ODOM_TWIST_SIGN_VY * (delta_y / dt))
+            odom_vx = 0.0 if dt == 0.0 else (REAL_ODOM_OUTPUT_SIGN_VX * (delta_x / dt))
+            odom_vy = 0.0 if dt == 0.0 else (REAL_ODOM_OUTPUT_SIGN_VY * (delta_y / dt))
             odom_wz = 0.0 if dt == 0.0 else (delta_theta / dt)
             ros_bridge.publish_transform(
                 create_odometry_transform(
@@ -122,7 +117,7 @@ def main():
                     theta_glob,
                     ros_bridge,
                     stamp=stamp,
-                    yaw_offset=REAL_ODOM_YAW_OFFSET,
+                    yaw_offset=REAL_ODOM_TO_BASE_YAW_OFFSET,
                 )
             )
             ros_bridge.publish_odom(

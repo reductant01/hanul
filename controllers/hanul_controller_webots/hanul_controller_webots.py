@@ -26,15 +26,18 @@ from common.ros_bridge import RobotROSBridge, init_ros_node, shutdown_ros_node
 
 INIT_X = 0.0
 INIT_Y = 0.0
-INIT_YAW = 0.0
+INIT_YAW = math.pi
 
-YAW_OFFSET = 0.0
-LIDAR_YAW = 0.0
+WEBOTS_BASE_TO_LIDAR_YAW = 0.0
 
 # ROS/Webots 축 차이가 생기면 여기서만 보정한다.
-WEBOTS_CMD_SIGN_VX = 1.0
-WEBOTS_CMD_SIGN_VY = 1.0
-WEBOTS_CMD_SIGN_W = 1.0
+WEBOTS_CMD_INPUT_SIGN_VX = 1.0
+WEBOTS_CMD_INPUT_SIGN_VY = -1.0
+WEBOTS_CMD_INPUT_SIGN_W = 1.0
+
+WEBOTS_ODOM_OUTPUT_SIGN_X = -1.0
+WEBOTS_ODOM_OUTPUT_SIGN_Y = -1.0
+WEBOTS_ODOM_TO_BASE_YAW_OFFSET = 0.0
 
 
 def main():
@@ -48,7 +51,7 @@ def main():
     init_ros_node()
     ros_bridge = RobotROSBridge('hanul_controller_node')
     stamp = ros_bridge.get_clock().now().to_msg()
-    ros_bridge.publish_transform(create_odometry_transform(INIT_X, INIT_Y, INIT_YAW, ros_bridge, stamp=stamp, yaw_offset=YAW_OFFSET))
+    ros_bridge.publish_transform(create_odometry_transform(INIT_X, INIT_Y, INIT_YAW, ros_bridge, stamp=stamp, yaw_offset=WEBOTS_ODOM_TO_BASE_YAW_OFFSET))
     ros_bridge.publish_odom(create_odometry_message(INIT_X, INIT_Y, INIT_YAW, ros_bridge, stamp=stamp))
     ros_bridge.publish_joint_states(
         create_joint_state_message(
@@ -58,7 +61,7 @@ def main():
             positions=[0.0, 0.0, 0.0],
         )
     )
-    ros_bridge.publish_static_transform(tf_base_lidar.create_lidar_transform(ros_bridge, stamp=stamp, lidar_yaw=LIDAR_YAW))
+    ros_bridge.publish_static_transform(tf_base_lidar.create_lidar_transform(ros_bridge, stamp=stamp, lidar_yaw=WEBOTS_BASE_TO_LIDAR_YAW))
     print("Hanul Webots Controller ready\n")
 
     print("Starting main loop. Waiting for /cmd_vel...\n")
@@ -74,23 +77,23 @@ def main():
             stamp = ros_bridge.get_clock().now().to_msg()
             vx, vy, w = ros_bridge.get_cmd_vel()
             robot.set_cmd_vel(
-                WEBOTS_CMD_SIGN_VX * vx,
-                WEBOTS_CMD_SIGN_VY * vy,
-                WEBOTS_CMD_SIGN_W * w,
+                WEBOTS_CMD_INPUT_SIGN_VX * vx,
+                WEBOTS_CMD_INPUT_SIGN_VY * vy,
+                WEBOTS_CMD_INPUT_SIGN_W * w,
             )
             pos_L, pos_R, pos_B = robot.get_encoder_values()
             delta_x, delta_y, delta_theta = odometry.update(pos_L, pos_R, pos_B)
             x, y, theta = odometry.get_pose()
-            x_glob = x + INIT_X
-            y_glob = y + INIT_Y
+            x_glob = (WEBOTS_ODOM_OUTPUT_SIGN_X * x) + INIT_X
+            y_glob = (WEBOTS_ODOM_OUTPUT_SIGN_Y * y) + INIT_Y
             theta_glob = theta + INIT_YAW
             stamp_ns = ros_bridge.get_clock().now().nanoseconds
             dt = 0.0 if last_stamp_ns is None else max((stamp_ns - last_stamp_ns) / 1e9, 1e-6)
             last_stamp_ns = stamp_ns
-            odom_vx = 0.0 if dt == 0.0 else (delta_x / dt)
-            odom_vy = 0.0 if dt == 0.0 else (delta_y / dt)
+            odom_vx = 0.0 if dt == 0.0 else (WEBOTS_ODOM_OUTPUT_SIGN_X * (delta_x / dt))
+            odom_vy = 0.0 if dt == 0.0 else (WEBOTS_ODOM_OUTPUT_SIGN_Y * (delta_y / dt))
             odom_wz = 0.0 if dt == 0.0 else (delta_theta / dt)
-            ros_bridge.publish_transform(create_odometry_transform(x_glob, y_glob, theta_glob, ros_bridge, stamp=stamp, yaw_offset=YAW_OFFSET))
+            ros_bridge.publish_transform(create_odometry_transform(x_glob, y_glob, theta_glob, ros_bridge, stamp=stamp, yaw_offset=WEBOTS_ODOM_TO_BASE_YAW_OFFSET))
             ros_bridge.publish_odom(
                 create_odometry_message(
                     x_glob,

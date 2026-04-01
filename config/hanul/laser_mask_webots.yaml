@@ -6,3 +6,6 @@ lidar_scan_mask:
     # 뒤쪽 120deg를 제거하려면 180deg 부근을 마스킹해야 한다.
     mask_lower_angle_deg: 120.0
     mask_upper_angle_deg: -120.0
+    restamp_output: false
+    restamp_offset_sec: 0.0
+    publish_every_n: 2

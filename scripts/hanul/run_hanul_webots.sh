@@ -42,7 +42,7 @@ elif [[ "$MODE" == "loc" ]]; then
   CMD_TOP_3="$CMD_ROBOT_MODEL"
   CMD_TOP_4="$CMD_VEL_OUTPUT"
   CMD_BOTTOM_3="$SETUP_CMD; cd $PROJECT_ROOT && ros2 launch nav2_bringup localization_launch.py map:=$MAP_YAML params_file:=$PROJECT_ROOT/config/hanul/amcl_params.yaml use_sim_time:=false autostart:=True; exec bash"
-  CMD_BOTTOM_4="$SETUP_CMD; cd $PROJECT_ROOT && python3 scripts/wait_tf_odom.py 6; python3 scripts/wait_lifecycle_active.py /map_server 20; python3 scripts/wait_lifecycle_active.py /amcl 20; (ros2 launch nav2_bringup navigation_launch.py params_file:=$PROJECT_ROOT/config/hanul/nav2_params.yaml use_sim_time:=false autostart:=True &); python3 scripts/wait_nav2_active.py 30; exec bash"
+  CMD_BOTTOM_4="$SETUP_CMD; cd $PROJECT_ROOT && python3 scripts/wait_tf_odom.py 6; python3 scripts/wait_lifecycle_active.py /map_server 20 0.2; python3 scripts/wait_lifecycle_active.py /amcl 20 0.2; (ros2 launch nav2_bringup navigation_launch.py params_file:=$PROJECT_ROOT/config/hanul/nav2_params.yaml use_sim_time:=false autostart:=True &); python3 scripts/wait_nav2_active.py 30; exec bash"
   CMD_RVIZ="$CMD_RVIZ_LOC"
 fi
 
